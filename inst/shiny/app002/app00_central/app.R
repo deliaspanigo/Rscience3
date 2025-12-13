@@ -30,7 +30,7 @@ ui <- page_sidebar(
   ),
   # Contenido principal
   uiOutput("main_content"),
-  
+
   # Pie de página con el título
   tags$footer(
     style = "
@@ -44,17 +44,17 @@ ui <- page_sidebar(
       border-top: 1px solid #dee2e6;
       z-index: 1000;
     ",
-    h2("General Linear Models - Fix Effects - Balanced Tratments - Anova - Anova 1 Way", 
+    h2("General Linear Models - Fix Effects - Balanced Tratments - Anova - Anova 1 Way",
        style = "margin: 0; font-weight: bold;")
   )
 )
 
 
 ui <- page_sidebar(
-  title =     h3("General Linear Models - Fix Effects - Balanced Tratments - Anova - Anova 1 Way", 
+  title =     h3("General Linear Models - Fix Effects - Balanced Tratments - Anova - Anova 1 Way",
                  style = "margin: 0; font-weight: bold;"),
   sidebar = sidebar(
-    "Rscience 0.1.0",
+    "Rscience 0.1.1",
     uiOutput("sidebar_content")
   ),
   # TabsetPanel normal y corriente en el UI
@@ -62,7 +62,7 @@ ui <- page_sidebar(
 )
 
 server <- function(input, output, session) {
-  
+
   # 1. List buttons (and tabs!)-------------------------------- ---------------------------
   buttons_info <- list(
     info = list(
@@ -83,7 +83,7 @@ server <- function(input, output, session) {
     ),
     inputs = list(
       btn_id = "btn_inputs",
-      btn_label = "Inputs", 
+      btn_label = "Inputs",
       btn_enable = TRUE,
       tab_id = "tab_inputs",
       icon = icon("upload"),
@@ -91,7 +91,7 @@ server <- function(input, output, session) {
     ),
     proc = list(
       btn_id = "btn_proc",
-      btn_label = "Proccessing", 
+      btn_label = "Proccessing",
       btn_enable = TRUE,
       tab_id = "tab_proc",
       icon = icon("chart-bar"),
@@ -99,7 +99,7 @@ server <- function(input, output, session) {
     ),
     analysis = list(
       btn_id = "btn_analysis",
-      btn_label = "Analysis", 
+      btn_label = "Analysis",
       btn_enable = TRUE,
       tab_id = "tab_analysis",
       icon = icon("chart-bar"),
@@ -114,12 +114,12 @@ server <- function(input, output, session) {
       order = 6
     )
   )
-  
+
   # 2. Only buttons info -------------------------------------------------------
   buttons_list <- reactive({
     enabled_buttons <- Filter(function(tab) isTRUE(tab$btn_enable), buttons_info)
     ordered_buttons <- enabled_buttons[order(sapply(enabled_buttons, function(x) x$order))]
-    
+
     lapply(ordered_buttons, function(tab) {
       list(
         id = tab$btn_id,
@@ -129,25 +129,25 @@ server <- function(input, output, session) {
       )
     })
   })
-  
+
   # 3. Buttons data from server ------- ----------------------------------------
   buttons_data <- module_buttons_server(
-    id = "navigation", 
+    id = "navigation",
     buttons_list_reactive = buttons_list,
     initial_active_id = "btn_theory"  # Empezar en Theory
   )
-  
+
   # 4. SideBar -----------------------------------------------------------------
   output$sidebar_content <- renderUI({
     module_buttons_ui("navigation")
   })
-  
+
   # 5. Main --------------------------------------------------------------------
   output$main_content <- renderUI({
     tabsetPanel(
       id = "main_tabs",
       type = "hidden", #"tabs",  # Cambiado de "hidden" a "tabs" normal
-      
+
       # Tab de Theory (con el módulo)
       tabPanel(
         title = "Info",
@@ -176,7 +176,7 @@ server <- function(input, output, session) {
         # h3("Analysis - Contenido simple"),
         uiOutput("main_analysis")
       ),
-      
+
       tabPanel(
         title = "Download",
         value = buttons_info$"download"$"tab_id",
@@ -184,7 +184,7 @@ server <- function(input, output, session) {
       )
     )
   })
-  
+
   # 6. Sincronize button → tab -------------------------------------------------
   observe({
     active_id <- buttons_data$active_button()
@@ -198,11 +198,11 @@ server <- function(input, output, session) {
       }
     }
   })
-  
+
   # 7. Sincronize tab → button ---------------------------
   observeEvent(input$main_tabs, {
     current_tab <- input$main_tabs
-    
+
     # Buscar el btn_id correspondiente
     btn_id_to_set <- NULL
     for(tab_info in buttons_info) {
@@ -211,109 +211,109 @@ server <- function(input, output, session) {
         break
       }
     }
-    
+
     if(!is.null(btn_id_to_set)) {
       # Intentar diferentes nombres posibles para la función
-      if(!is.null(buttons_data$set_active_button) && 
+      if(!is.null(buttons_data$set_active_button) &&
          is.function(buttons_data$set_active_button)) {
         buttons_data$set_active_button(btn_id_to_set)
-      } else if(!is.null(buttons_data$set_active) && 
+      } else if(!is.null(buttons_data$set_active) &&
                 is.function(buttons_data$set_active)) {
         buttons_data$set_active(btn_id_to_set)
-      } else if(!is.null(buttons_data$update_active) && 
+      } else if(!is.null(buttons_data$update_active) &&
                 is.function(buttons_data$update_active)) {
         buttons_data$update_active(btn_id_to_set)
       }
       # Si ninguna funciona, no hacemos nada
     }
   })
-  
-  
+
+
   ### SERVER - SERVER - SERVER - SERVER - SERVER - SERVER ----------------------
   ### SERVER - SERVER - SERVER - SERVER - SERVER - SERVER ----------------------
   ### SERVER - SERVER - SERVER - SERVER - SERVER - SERVER ----------------------
-  
+
   # Server 01. Info ------------------------------------------------------------
 
-    
+
   # Server 02. Theory ----------------------------------------------------------
   module_theory_server(id = "theory_module")
-  
-  
-  
+
+
+
   # Server 03. Inputs -----------------------------------------------------------
   app_state_inputs <- module_inputs_server(id = "inputs_module")
-  
+
   # observe({
   #   req(app_state_inputs)
   #   print(app_state_inputs())
   # })
   # Server Hide - Proccesing
-  # Currier 02 
+  # Currier 02
 
-  
-  
 
-  
-  
 
-  
+
+
+
+
+
   # Server 04 - Rendering files ------------------------------------------------
   the_currier_proccesing <- reactiveValues(is_running = FALSE,
                                            is_done = FALSE)
-  
+
   observe({
     req( app_state_inputs()$play$run)
     the_currier_proccesing$is_running <- app_state_inputs()$play$run
     # the_currier_proccesing$is_done    <- TRUE
   })
-  
+
   app_state_render <-  module_render_outputs_server(
-    id = "module_render", 
+    id = "module_render",
     app_state = the_currier_proccesing# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
   )
-  
+
   # --- Sincronización: Al terminar el proceso, saltar a Analysis ---
   observeEvent(app_state_render$is_done, {
     # Validamos que el proceso efectivamente haya terminado y sea TRUE
     req(app_state_render$is_done)
-    
+
     # 1. Cambiamos el tabsetPanel principal a la solapa de Análisis
     updateTabsetPanel(session, "main_tabs", selected = buttons_info$analysis$tab_id)
-    
+
     # 2. (Opcional) Notificación para el usuario
     showNotification("Proceso completado. Mostrando análisis.", type = "message")
   })
-  
+
   # Server 05 - Analysis -------------------------------------------------------
   # Server 05 - Analysis -------------------------------------------------------
   app_state_analysis <- reactive({
-    
+
     # 1. Acceso directo: Esto crea una dependencia únicamente de esta variable
     # y no de todo el objeto reactiveValues.
     path_ready <- app_state_render$temp_output_folder_path
-    
+
     # 2. Validación silenciosa: Si es NULL o vacío, req() detiene la ejecución
     # de este bloque sin lanzar errores en la consola.
     req(path_ready)
-    
+
     # 3. Lógica de construcción
     str_file_name <- "zzz_output_report99_Rscience_Report_00.html"
     str_file_path <- file.path(path_ready, str_file_name)
-    
+
     output_list <- list(
       str_file_path = str_file_path
     )
-    
+
     # Debugging informativo
     message("--- GENERANDO APP_STATE_ANALYSIS ---")
     print(output_list)
-    
-    return(output_list)    
+
+    return(output_list)
   })
-  
+
   output$"analysis_view_html" <- renderText({
-    
+
     # Initial message (user just entered)
     initial_message <- HTML('
       <div style="
@@ -382,7 +382,7 @@ server <- function(input, output, session) {
         }
       </style>
     ')
-    
+
     # Loading message (when processing)
     loading_message <- HTML('
       <div style="
@@ -434,7 +434,7 @@ server <- function(input, output, session) {
             filter: blur(1px);
           "></div>
         </div>
-        
+
         <!-- Blinking dots -->
         <div style="display: flex; justify-content: center; margin-bottom: 30px; gap: 15px;">
           <div style="
@@ -462,13 +462,13 @@ server <- function(input, output, session) {
             animation-delay: 0.4s;
           "></div>
         </div>
-        
+
         <h3 style="color: #1c7ed6; margin-bottom: 15px; font-weight: 600;">Generating Analysis...</h3>
         <p style="color: #1971c2; max-width: 500px; margin-bottom: 30px; font-size: 16px;">
           Your report is being generated. This may take a few moments.
           Please wait while we process your data.
         </p>
-        
+
         <!-- Animated progress bar -->
         <div style="
           width: 300px;
@@ -486,7 +486,7 @@ server <- function(input, output, session) {
             animation: loading 2s infinite ease-in-out, shimmer 3s infinite;
           "></div>
         </div>
-        
+
         <!-- Floating bubbles -->
         <div style="position: absolute; bottom: 30px; left: 30px; animation: bubble 5s infinite ease-in-out;">
           <div style="width: 15px; height: 15px; background-color: rgba(77, 171, 247, 0.4); border-radius: 50%;"></div>
@@ -521,56 +521,56 @@ server <- function(input, output, session) {
         }
       </style>
     ')
-    
+
     # 1. Check if reactive object exists
     if (is.null(app_state_render)) {
       return(initial_message)  # User just entered
     }
-    
+
     # 2. Check if str_temp_work_folder_path property exists
     if (is.null(app_state_render$str_temp_work_folder_path)) {
       return(initial_message)  # User just entered
     }
-    
+
     str_temp_work_folder_path <- app_state_render$str_temp_work_folder_path
     str_temp_output_folder_path <- app_state_render$str_temp_output_folder_path
-    
+
     # 3. Check if paths exist
     if (is.null(str_temp_output_folder_path) || str_temp_output_folder_path == "") {
       return(initial_message)  # User hasn\'t started analysis yet
     }
-    
+
     str_file_name <- "zzz_output_report99_Rscience_Report_00.html"
     str_file_path <- file.path(str_temp_output_folder_path, str_file_name)
-    
+
     html_path <- str_file_path
-    
+
     # 4. If HTML file doesn\'t exist, show loading message
     if (!file.exists(html_path)) {
       return(loading_message)  # Analysis in progress
     }
-    
+
     # 5. If file exists, show it
     html_dir <- dirname(html_path)
     html_filename <- basename(html_path)
-    
+
     # Define and register resource
     resource_id <- digest::digest(html_dir, algo = "md5")
     shiny::addResourcePath(resource_id, html_dir)
-    
+
     # Build URL with unique resource ID
     html_url <- paste0("/", file.path(resource_id, html_filename))
-    
+
     # Create iframe
     armado_v <- paste('<div style="height: 100%; width: 100%; "><iframe style="height: 100%; width:100%; border: none;" src="', html_url, '"></iframe></div>', sep = "")
-    
+
     return(armado_v)
   })
-  
+
   output$"main_analysis" <- renderUI({
     bslib::card(
       id = "output-main-card",
-      
+
       # [CAMBIO] Usamos bslib::card_header() para forzar el título.
       bslib::card_header(
         style = "height: 60px; overflow: hidden;",
@@ -580,33 +580,33 @@ server <- function(input, output, session) {
           # column(2, uiOutput("botonera_html"))
         )
       ),
-      
+
       card_body(
         class = "p-0",
         tags$div(
           # style = "flex-grow: 1; overflow-y: auto;",
           style = "flex-grow: 1; overflow-y: auto; height: 80vh; width: 100%; overflow: hidden;", # Asegurar que el contenedor tenga altura suficiente
-          
+
           # Contenido que deseas mostrar dentro de la tarjeta
           htmlOutput("analysis_view_html")
         )
       )
     )
-    
-    
-    
-    
-    
+
+
+
+
+
   })
-  
+
   # Server 06 - Download -------------------------------------------------------
   module_download_multi_server(
-    id = "module_download_multi", 
+    id = "module_download_multi",
     app_state_render = app_state_render# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
   )
-  
-  
-  
+
+
+
 }
 
 shinyApp(ui, server)
