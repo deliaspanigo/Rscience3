@@ -62,7 +62,7 @@ module_theory_server <- function(id) {
     )
     
     # 5.2. Folder path from resources
-    str_source_folder_full_path <- here::here("..", "R_and_quarto_files_01_ready", "theory_quarto_files")
+    str_source_folder_full_path <- here::here("..", "RQ_01_ready", "theory_quarto_files")
     
     # 5.3. Dynamically create render functions for each theory item
     lapply(theory_list, function(theory_item) {

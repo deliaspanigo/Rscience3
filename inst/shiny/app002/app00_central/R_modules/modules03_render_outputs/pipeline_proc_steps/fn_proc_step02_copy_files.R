@@ -26,7 +26,9 @@ fn_proc_step02_copy_files <- function(state, my_pipeline_steps, list_bag_steps, 
     state$progress<- state$current_step / state$max_step
     
     # Get necessary paths from the reactive storage
-    str_render_folder_path <- here::here("..", "R_and_quarto_files_02_render")
+    str_render_folder_path <- here::here("..", "RQ_02_render")
+    print(str_render_folder_path)
+    
     # NOTE: We use reactiveValuesToList to safely read the value in the main thread
     # before the future_promise starts.
     str_work_temporal_folder_path <- list_bag_steps$temp_work_folder_path
