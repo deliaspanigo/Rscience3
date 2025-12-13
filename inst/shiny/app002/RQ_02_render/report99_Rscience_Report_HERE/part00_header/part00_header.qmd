@@ -1,0 +1,91 @@
+---
+title: ""
+format: 
+  html:
+    self-contained: true
+    embed-resources: true
+    toc: false
+    number-sections: false
+
+---
+
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+library(rprojroot)
+library(here)
+``` 
+
+
+```{r eval=TRUE, include=TRUE, echo=FALSE}
+
+
+logo_path <- here::here("..", "common_files", "Rscience_logo_01.png")
+
+
+```                               
+
+::: {#the_header}
+
+::: columns
+::: {.column width="20%"}
+```{r eval=TRUE, include=TRUE, echo=FALSE, out.width="5em"}
+if (file.exists(logo_path)) {
+  knitr::include_graphics(logo_path)
+} else {
+  # Mostrar mensaje o imagen alternativa
+  cat("⚠️ Logo no encontrado\n")
+  # Opcional: crear un logo simple con ggplot2
+  # ggplot() + ggtitle("Logo") + theme_void()
+}
+# ![](Rscience_logo_01.png){fig-alt="Descripción de la imagen" width="40%"}
+# 
+```    
+
+:::
+::: {.column width="33%"}
+Standard analysis, reporting and R code for Science.
+- Reproducibility.
+- Transparency.
+- Open Access.
+:::
+::: {.column width="33%"}
+```{r eval=TRUE, include=TRUE, echo=FALSE}
+# Cargar la librería si no está cargada
+library(fontawesome)
+library(htmltools)
+
+# Definir iconos con tamaño fijo pero contenedor flexible
+rscience_icon <- tags$img(src = logo_path, style = "height: 24px; width: auto;")
+github_icon   <- fa("github", fill = "#333333", height = "24px")
+linkedin_icon <- fa("linkedin", fill = "#0077B5", height = "24px")
+youtube_icon  <- fa("youtube", fill = "#FF0000", height = "24px")
+
+# Enlaces simples
+rscience_link <- tags$a(href = "https://google.com/", target = "_blank", rscience_icon)
+github_link <- tags$a(href = "https://github.com/", target = "_blank", github_icon)
+linkedin_link <- tags$a(href = "https://www.linkedin.com/in/deliaspanigo/", target = "_blank", linkedin_icon)
+youtube_link <- tags$a(href = "https://www.youtube.com/", target = "_blank", youtube_icon)
+
+# Contenedor ultra simple
+div(
+  style = "
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 100%;
+  ",
+  rscience_link,
+  github_link,
+  linkedin_link,
+  youtube_link
+)
+```
+
+:::
+:::
+
+
+
+:::

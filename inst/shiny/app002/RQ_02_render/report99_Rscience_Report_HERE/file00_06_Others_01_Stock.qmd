@@ -1,0 +1,39 @@
+
+```{r aver2, eval=TRUE, include=FALSE}
+
+```
+
+El script realiza todo lo relacionado al análisis de datos enmarcado en un diseño a un factor de efecto fijos completamente aleatorizado.
+
+El scriopt realiza:  
+- 4 test estadísticos.  
+- 15 gráficos.  
+- 20 tablas.  
+
+Cuando se habla de realizar el un Anova, en realidad no es solo realizar el Test de Análisis de la varianza, sino el test en si mismo con todos los anexos y accesorios indispensables.
+
+Un poco más en detalle, el listado es el siguiente:  
+- Test ANOVA a 1 Factor.  
+- Un test de comparación múltiple (Test de Tukey).  
+- Test de Normalidad Shapiro-Wilks para los residuos.  
+- Test de Homogeneidad de Varianzas de Bartlett para los residuos.  
+- Estadísticas descriptivas para una variable cuantitativa particionada por lo niveles del factor.  
+- Estadísticas descriptivas aplicados a los residuos en su totalidad y aplicados a los residuos particionados por el factor.  
+
+
+Rscience aborda toda la complejidad relacionada a un análisis de la varianza a 1 factor ya sea dentro del test Anova, su test de comparaciones múltibple, los test estadísticos para sus requisitos y para la generación de todas las tablas y gráficos asociados.
+
+El script realiza un manejo explícito de los datos faltantes, mendiante la utilización de la función na.omit() previo al ingreso de los datos a las funciones estadísticas. De esa manera se maneja todo el tiempo solo a las filas de datos que efectivamente ingresan al test estadístico, a tablas y a gráficos.
+
+El script contiene todos los criterios estadísticos relacionados a la toma de decisiones de para ANova a 1 Factor, otorgando al usuario frases directas y explícitas sobre cómo interpretar sus datos.
+
+Rscience es tajante, directo y claro en cuanto a la toma de decisiones. Deben tomarse las frases otorgadas como frases que orientan en una buena dirección y sentido a un operador. Rscience solo facilita interpretaciones estadísticas, luego el operador deberá terminar de entender la situación bajo análisis para poder dar interpretaciones de esos resultados en su marco de trabajo o estudio.
+
+Algunos detalles particularmente importantes del script 003 para ANova a 1 Factor, Efectos Fijos, Modelo Lineal General, son los gráficos generados para los niveles del factor utilizando la media de cada nivel y el error estándard obtenido del modelo y no del error estándard obtenido de los datos. La bibliografía estadística indica que esa es la forma correcta de plotear gráficamente lo que tanto anova como el test de comparaciones están realizando analíticamente. Sin embargo en ninguno de los softwares clásicos de estadística ha sido posible nunca obtener dicho gráfico.
+
+También es un gran alivio para el operador poder elegir el orden de presentación de los niveles del factor, ya que por defecto todos los softwares realizan las tablas y los gráficos con el orden alfabético sin la posibilidad de poder realizar este tipo de cambios.
+
+
+
+
+

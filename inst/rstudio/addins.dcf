@@ -1,0 +1,11 @@
+Name: Rscience3 - Init Page
+Description: VAMO!!
+Binding: run_app001_InitPage
+Interactive: true
+
+
+Name: Rscience3 - Anova 1 way
+Description: VAMO!!
+Binding: run_app002
+Interactive: true
+

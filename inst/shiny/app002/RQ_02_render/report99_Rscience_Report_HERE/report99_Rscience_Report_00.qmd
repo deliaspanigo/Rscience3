@@ -1,0 +1,142 @@
+---
+title: "Rscience - Parameterized Report"
+format: html
+params:
+    activate_params: "TRUE"
+    file_source: "from_params"
+    file_name: "from_params"
+    the_package: "from_params"
+    tool_used: "from_params"
+    script_used: "from_params"
+    current_time: "from_params"
+---
+
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+library(yaml)
+
+```
+
+
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+ #Cargar configuración desde _quarto.yml
+config <- yaml::read_yaml("_quarto.yml")
+
+# Folders
+input_folder <- config$my_global_folders$USER_OUTPUT_FOLDER
+output_folder <- config$my_global_folders$USER_OUTPUT_FOLDER
+
+# Files
+str_input_file_path_Env_RData    <- config$list_input_file_path$str_file_path_Env_RData
+str_input_file_path_report01 <- config$list_input_file_path$"str_file_path_report01_qmd"
+
+# str_output_file_path_RData <- file.path(input_folder, str_output_file_name_RData)
+load(str_input_file_path_Env_RData)
+```
+
+
+```{r}
+#| echo: false
+library(knitr)
+library(kableExtra)
+source("fns.R")
+```
+
+```{r inside101, eval=TRUE, include=FALSE, echo=FALSE}
+
+file_source <- params$"file_source"
+    # if(file_source == "from_params") file_source <- "r_source"
+file_name <- params$"file_name"
+    # if(file_name == "from_params") file_name <- "mtcars"
+####----------------------------------------------------------------------------
+# 1. Configuración de locale a inglés (temporalmente)
+current_time <- params$"current_time"
+current_time_color <- "white"
+if(current_time == "from_params") {
+  current_time <- Sys.time()
+  current_time_color <- "orange"
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+}
+# 3. Resto de la Información de Tiempo (no necesita cambios de locale)
+local_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S %Z") 
+local_time_full <- paste0('<span style="background-color: ', current_time_color, ';">', local_time_full, '</span>')
+  
+utc_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S", tz = "UTC")
+utc_time_full <- paste0('<span style="background-color: ', current_time_color, ';">', utc_time_full, '</span>')
+
+system_time_full <- local_time_full 
+system_time_full <- paste0('<span style="background-color: ', current_time_color, ';">', system_time_full, '</span>')
+
+tz_info <- Sys.timezone()
+tz_info <- paste0('<span style="background-color: ', current_time_color, ';">', tz_info, '</span>')
+
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+####----------------------------------------------------------------------------
+script_used <-  params$"script_used"
+if(script_used == "from_params"){
+  script_used <- "Script XXX-001"
+  script_used <- paste0('<span style="background-color: orange;">', script_used, '</span>')
+} 
+####----------------------------------------------------------------------------
+
+the_package <- params$"the_package"
+if(the_package == "from_params"){
+  the_package <- "Rscience"
+  #the_package <- "agricolae"
+  #the_package <- paste0('<span style="background-color: orange;">', the_package, '</span>')
+} 
+
+if (the_package %in% installed.packages()[, "Package"]) {
+  package_version_info <- paste0(the_package, " ", as.character(packageVersion(the_package)))
+} else {
+  package_version_info <- paste0(the_package, " ", "1.0.13")
+  package_version_info <- paste0('<span style="background-color: orange;">', 
+                                 package_version_info, '</span>')
+  
+}
+####----------------------------------------------------------------------------
+
+tool_used <- params$"tool_used"
+if(tool_used == "from_params"){
+  tool_used <- "General Linear Model - Fixed Effect - Balanced Tratments - Anova - Anova 1 Way"
+  tool_used <- paste0('<span style="background-color: orange;">', tool_used, '</span>')
+} else tool_used <- tool_used_styled <- paste0(
+  '<span style="background-color: green; font-weight: bold; font-size: 1.2em; color: white; padding: 2px;">', 
+  tool_used, 
+  '</span>'
+)
+
+
+```
+
+
+::: {#zocalo}
+```{r file00_00_Header, child='part00_header/part00_header.qmd'}
+```
+:::
+
+::: {.panel-tabset .nav-pills .nav-fill .flex-column .main-tabs}
+
+# Init
+```{r cod02, child='part01_init/part01_init.qmd'}
+```
+
+
+# Theory
+```{r cod999, child='part02_theory/part02_theory.qmd'}
+```
+
+
+# Data Analysis
+```{r code_aver01, child='part03_data_analysis/part03_data_analysis.qmd'}
+```
+
+
+# R
+```{r child='part04_R_code/part04_R_code.qmd'}
+```
+
+
+:::

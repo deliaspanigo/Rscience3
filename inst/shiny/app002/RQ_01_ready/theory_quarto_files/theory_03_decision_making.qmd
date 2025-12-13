@@ -1,0 +1,49 @@
+---
+title: "Understanding ANOVA"
+subtitle: "Analysis of Variance Fundamentals"
+author: "Rscience group"
+format:
+  revealjs:
+    self-contained: true
+    transition: slide
+    theme: sky
+    background-color: "#F8F9FA"
+    navigation-mode: linear
+    controls: true
+    controls-layout: edges
+    controls-back-arrows: visible
+    progress: true
+    mouse-wheel: true
+    slide-number: true
+    footer: "Decision-Making Process in ANOVA"
+    mathjax: cdn
+css: styles.css
+---
+
+# Understanding ANOVA {data-background-color="#EBF5FB"}
+
+## Analysis of Variance Fundamentals
+
+<br>
+
+**A comprehensive guide to comparing multiple group means**
+
+---
+
+## What is ANOVA? {data-background-color="#E8F8F5"}
+
+
+### Decision-Making Process in ANOVA
+**Step 01:** Normality Verification  
+**Step 02:** Homogeneity Verification  
+**Step 03:** Global Requirements Check  
+**Step 04:** ANOVA Validation  
+**Step 05:** ANOVA Interpretation  
+**Step 06:** Tukey Test Validation  
+**Step 07:** Tukey Test Interpretation  
+**Step 08:** ANOVA-Tukey Consistency Analysis  
+**Step 09:** Final Conclusion
+
+---
+
+
