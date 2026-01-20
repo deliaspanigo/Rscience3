@@ -1,11 +1,11 @@
 Package: Rscience3
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.2
+Version: 0.1.4
 Authors@R: c(
     person(
-      "Jane", "Doe",
-      email = "jane@example.com",
+      "David", "Elias Panigo",
+      email = "d.eliaspanigo@gmail.com",
       role = c("aut", "cre")
     )
   )

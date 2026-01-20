@@ -1,0 +1,36 @@
+### 1) Requeriment - Normaility test - Residuals (R format)
+```{r}
+#| echo: false
+
+
+fn_show_table_dynamic(object_name = "df_normality", caption_text = "")
+
+
+```
+
+### 2) Requeriment - Homogeneity test - Residuals (R format)
+```{r}
+#| echo: false
+
+fn_show_table_dynamic(object_name = "df_homogeneity", caption_text = "")
+
+
+```
+
+### 3) Estimated variances - Residuals
+```{r}
+#| echo: false
+
+# Requiere el paquete rlang (o tidyverse)
+library(rlang)
+
+# 1. Definir los nombres que queremos
+# nombres_aver <- c("df_model_error", "df_raw_error", "phrase_info_errors")
+# aver <- mget(nombres_aver)
+# aver
+fn_show_table_dynamic(object_name = "df_model_error", caption_text = "")
+fn_show_table_dynamic(object_name = "df_raw_error", caption_text = "")
+knitr::asis_output(phrase_info_errors)
+```
+
+

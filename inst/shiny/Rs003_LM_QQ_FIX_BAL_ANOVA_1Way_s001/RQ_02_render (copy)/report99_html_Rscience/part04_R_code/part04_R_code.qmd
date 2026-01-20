@@ -1,0 +1,64 @@
+---
+title: ""
+format: 
+  html:
+    self-contained: true
+    embed-resources: true
+    toc: false
+    number-sections: false
+
+---
+
+
+
+
+::: {.panel-tabset .nav-pills .nav-fill .flex-column}
+
+# R Script
+
+```{r display-r-code, echo=TRUE}
+my_file_name <- 'zzz_output_report02_R_script.R'
+my_file_path <- here::here("..", "zzz_zzz_USER_OUPUT_FOLDER", my_file_name)
+
+print(my_file_path)
+file.exists(my_file_path)
+
+if (file.exists(my_file_path)) {
+  the_code <- readLines(my_file_path, warn = FALSE)
+  
+  # FORMA CORRECTA:
+  the_code
+} else {
+  cat("File not found:", my_file_path)
+}
+```
+
+
+
+# Rscience Code
+
+<!-- ```{r incrustar-iframe} -->
+<!-- #| echo: false -->
+<!-- #| warning: false -->
+<!-- #| message: false -->
+<!-- #| results: asis -->
+
+<!-- # **Ruta Web Relativa (Reemplaza a la lógica de addResourcePath)** -->
+<!-- # Esta es la ruta que el navegador usará para cargar el archivo. -->
+<!-- html_web_path <- "../zzz_zzz_USER_OUPUT_FOLDER/zzz_output_report01_RQuarto_00.html" -->
+
+<!-- # 1. Arma la etiqueta <iframe> -->
+<!-- iframe_tag <- paste0( -->
+<!--   '<div class="report-container" style="height: 1000px; width: 100%;">', -->
+<!--   '<iframe style="height: 100%; width: 100%; border: none;" ', -->
+<!--   'src="', html_web_path, '">',  -->
+<!--   '</iframe></div>' -->
+<!-- ) -->
+
+<!-- # 2. Imprime la cadena HTML cruda -->
+<!-- cat(iframe_tag) -->
+<!-- ``` -->
+
+
+
+:::

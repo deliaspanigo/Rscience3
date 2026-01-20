@@ -1,0 +1,24 @@
+
+<!-- ```{r clean-code, eval=TRUE, include=FALSE} -->
+<!-- # PASO A: Crea el archivo R limpio (sin Markdown) usando purl -->
+<!-- input_qmd_file <- "report_RQuarto_file00.qmd" -->
+<!-- output_R_file <- "codigo_limpio_para_mostrar.R" -->
+
+<!-- # knitr::purl(input_qmd_file, output = output_R_file) -->
+
+
+<!-- vector_R_code <- base::readLines(input_qmd_file) -->
+
+<!-- vector_R_code <- vector_R_code |> -->
+<!--   stringr::str_subset(pattern = "^```", negate = TRUE) -->
+
+<!-- # vector_R_code <- vector_R_code |> -->
+<!-- #   stringr::str_subset(pattern = "^## ----", negate = TRUE) -->
+
+<!-- base::writeLines(vector_R_code, output_R_file) -->
+<!-- ``` -->
+
+<!-- ```{r show-clean-code, eval=FALSE, echo=TRUE, file=output_R_file} -->
+<!-- ``` -->
+
+

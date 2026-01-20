@@ -1,0 +1,129 @@
+/* ------------------------------------------------------------------ */
+/* 1. DEFINICIÓN DE VARIABLES CSS NATIVAS (Ajuste Borde MÁS GRUESO/OSCURO) */
+/* ------------------------------------------------------------------ */
+:root {
+    /* Fondo Cálido de la Página */
+    --rs-color-page-bg: #fff8f0;
+
+    /* Colores Primarios y de Pestañas */
+    --rs-color-primary: #ff8c00;
+    --rs-color-nav-bg: #ffffff;
+    --rs-color-text-normal: #a0522d;
+    --rs-color-text-active: #ffffff;
+    --rs-color-hover-bg: #ffe4c4;
+    --rs-color-content-border: #4d2600; /* ¡AJUSTADO! Marrón muy oscuro (casi negro) */
+
+    /* Colores del Código R (Mantenido) */
+    --rs-code-bg: #f9f9f9;
+    --rs-code-text: #000000;
+    --rs-output-bg: #2980b9;
+    --rs-output-text: #ffffff;
+
+    /* Geometría */
+    --rs-border-radius: 0.5rem;
+    --rs-transition-speed: 0.3s;
+    --rs-border-thickness: 3px;         /* ¡AJUSTADO! Borde a 3 píxeles */
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. CONFIGURACIÓN DEL FONDO DE PÁGINA (Sin cambios)                 */
+/* ------------------------------------------------------------------ */
+
+body {
+    background-color: var(--rs-color-page-bg) !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. ESTILOS DE PESTAÑAS (Usando las nuevas variables de borde)      */
+/* ------------------------------------------------------------------ */
+
+.panel-tabset.main-tabs {
+    margin-top: 1.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-radius: var(--rs-border-radius);
+}
+
+/* Estilos de la BARRA DE NAVEGACIÓN */
+.panel-tabset.main-tabs .nav-pills {
+    background-color: var(--rs-color-nav-bg) !important;
+    padding: 0.5rem 0.75rem 0.25rem 0.75rem !important;
+    border-radius: var(--rs-border-radius) var(--rs-border-radius) 0 0;
+    margin-bottom: 0;
+    /* Usa la variable de grosor y color oscuro */
+    border-bottom: var(--rs-border-thickness) solid var(--rs-color-content-border);
+}
+
+/* Estilos de los ENLACES/PESTAÑAS */
+.panel-tabset.main-tabs .nav-link {
+    color: var(--rs-color-text-normal) !important;
+    background-color: transparent !important;
+    /* Usa la variable de grosor y color oscuro */
+    border: var(--rs-border-thickness) solid var(--rs-color-content-border) !important;
+    border-bottom: none !important;
+    border-radius: var(--rs-border-radius) var(--rs-border-radius) 0 0 !important;
+    padding: 0.6rem 1rem !important;
+    margin-right: 0.5rem;
+    font-weight: 500;
+    transition: all var(--rs-transition-speed);
+}
+
+/* Estado HOVER */
+.panel-tabset.main-tabs .nav-link:not(.active):hover {
+    background-color: var(--rs-color-hover-bg) !important;
+    color: #8b4513 !important;
+    /* El borde sigue siendo el color oscuro */
+    border-color: var(--rs-color-content-border) !important;
+}
+
+/* Estado ACTIVO */
+.panel-tabset.main-tabs .nav-link.active {
+    background-color: var(--rs-color-primary) !important;
+    color: var(--rs-color-text-active) !important;
+    font-weight: 600 !important;
+    /* Borde del mismo color que la pestaña, pero con el grosor definido */
+    border: var(--rs-border-thickness) solid var(--rs-color-primary) !important;
+    border-bottom: none !important;
+    box-shadow: none;
+}
+
+/* 4. ESTILOS DEL CONTENIDO DE LA PESTAÑA */
+
+.panel-tabset.main-tabs .tab-content {
+    /* Usa el nuevo grosor y color oscuro */
+    border: var(--rs-border-thickness) solid var(--rs-color-content-border);
+    border-top: none;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    border-radius: 0 0 var(--rs-border-radius) var(--rs-border-radius);
+}
+
+
+/* ------------------------------------------------------------------ */
+/* 5. ESTILOS PARA BLOQUES DE SALIDA DE CÓDIGO (R OUTPUT) 📊 */
+/* ------------------------------------------------------------------ */
+
+/* Aplica estilos al contenedor principal de la salida (incluye textos, tablas, etc.) */
+.cell-output,
+.sourceCode .output {
+    /* Fondo del bloque de salida */
+    background-color: var(--rs-output-bg) !important;
+    /* Color del texto dentro de la salida */
+    color: var(--rs-output-text) !important;
+    /* Aplica bordes y radios definidos */
+    border: var(--rs-border-thickness) solid var(--rs-color-content-border);
+    border-radius: var(--rs-border-radius);
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+/* Opcional: Estilo específico para los mensajes de texto de la salida */
+.cell-output pre {
+    /* Asegura que el texto se vea bien */
+    color: var(--rs-output-text) !important;
+    /* Elimina el fondo que podría heredar del código */
+    background-color: transparent !important;
+    border: none;
+}
+/* [El resto del código para código R y output se mantiene igual] */
+
+

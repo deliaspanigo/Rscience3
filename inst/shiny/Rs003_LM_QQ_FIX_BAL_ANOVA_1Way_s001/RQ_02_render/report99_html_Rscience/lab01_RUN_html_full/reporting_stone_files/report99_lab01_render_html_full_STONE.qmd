@@ -1,0 +1,163 @@
+---
+title: "Rscience - Parameterized Report"
+format:
+  html:
+    output-file: "report99_lab01_render_html_full_STONE.html"
+    theme: cosmo
+    css:
+      - common_files/custom_theme.css
+    toc: true
+    toc-float: true
+    toc-location: right
+    number-sections: true
+    self-contained: true
+    embed-resources: true
+    include-in-header:
+      text: |
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    fig-format: svg
+    code-copy: true
+    code-link: true
+    grid:
+      body-width: 2000px
+      margin-width: 250px
+      gutter-width: 1.5rem
+params:
+    activate_params: "TRUE"
+    file_source: "from_params"
+    file_name: "from_params"
+    the_package: "from_params"
+    tool_used: "from_params"
+    script_used: "from_params"
+    current_time: "from_params"
+---
+
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+# Files
+  str_file_name_RData_internal <- "zzz_output_report01_lab01_step05_ENV_Rscript_internal.RData"
+
+
+# Folders
+  str_output_folder_external <-  "../../../zzz_zzz_output"
+  str_input_folder_path <- "../../../zzz_zzz_output"
+
+# Input paths
+  str_file_path_RData_internal <- file.path(str_input_folder_path, str_file_name_RData_internal)
+
+
+# Loading objects
+load(str_file_path_RData_internal)
+
+
+```
+
+
+
+
+
+```{r}
+#| echo: false
+library(knitr)
+library(kableExtra)
+source("fns.R")
+```
+
+```{r inside101, eval=TRUE, include=FALSE, echo=FALSE}
+
+file_source <- params$"file_source"
+    # if(file_source == "from_params") file_source <- "r_source"
+file_name <- params$"file_name"
+    # if(file_name == "from_params") file_name <- "mtcars"
+####----------------------------------------------------------------------------
+# 1. Configuración de locale a inglés (temporalmente)
+current_time <- params$"current_time"
+current_time_color <- "white"
+if(current_time == "from_params") {
+  current_time <- Sys.time()
+  current_time_color <- "orange"
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+}
+# 3. Resto de la Información de Tiempo (no necesita cambios de locale)
+local_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S %Z") 
+local_time_full <- paste0('<span style="background-color: ', current_time_color, ';">', local_time_full, '</span>')
+  
+utc_time_full <- format(current_time, "%Y-%m-%d %H:%M:%S", tz = "UTC")
+utc_time_full <- paste0('<span style="background-color: ', current_time_color, ';">', utc_time_full, '</span>')
+
+system_time_full <- local_time_full 
+system_time_full <- paste0('<span style="background-color: ', current_time_color, ';">', system_time_full, '</span>')
+
+tz_info <- Sys.timezone()
+tz_info <- paste0('<span style="background-color: ', current_time_color, ';">', tz_info, '</span>')
+
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+  # current_time <- paste0('<span style="background-color: orange;">', current_time, '</span>')
+####----------------------------------------------------------------------------
+script_used <-  params$"script_used"
+if(script_used == "from_params"){
+  script_used <- "Script XXX-001"
+  script_used <- paste0('<span style="background-color: orange;">', script_used, '</span>')
+} 
+####----------------------------------------------------------------------------
+
+the_package <- params$"the_package"
+if(the_package == "from_params"){
+  the_package <- "Rscience"
+  #the_package <- "agricolae"
+  #the_package <- paste0('<span style="background-color: orange;">', the_package, '</span>')
+} 
+
+if (the_package %in% installed.packages()[, "Package"]) {
+  package_version_info <- paste0(the_package, " ", as.character(packageVersion(the_package)))
+} else {
+  package_version_info <- paste0(the_package, " ", "1.0.13")
+  package_version_info <- paste0('<span style="background-color: orange;">', 
+                                 package_version_info, '</span>')
+  
+}
+####----------------------------------------------------------------------------
+
+tool_used <- params$"tool_used"
+if(tool_used == "from_params"){
+  tool_used <- "General Linear Model - Fixed Effect - Balanced Tratments - Anova - Anova 1 Way"
+  tool_used <- paste0('<span style="background-color: orange;">', tool_used, '</span>')
+} else tool_used <- tool_used_styled <- paste0(
+  '<span style="background-color: green; font-weight: bold; font-size: 1.2em; color: white; padding: 2px;">', 
+  tool_used, 
+  '</span>'
+)
+
+
+```
+
+
+::: {#zocalo}
+```{r file00_00_Header, child='part00_header/part00_header.qmd'}
+```
+:::
+
+::: {.panel-tabset .nav-pills .nav-fill .flex-column .main-tabs}
+
+# Init
+```{r cod02, child='part01_init/part01_init.qmd'}
+```
+
+
+# Theory
+```{r cod999, child='part02_theory/part02_theory.qmd'}
+```
+
+
+# Data Analysis
+```{r code_aver01, child='part03_data_analysis/part03_data_analysis.qmd'}
+```
+
+
+# R
+```{r child='part04_R_code/part04_R_code.qmd'}
+```
+
+
+:::

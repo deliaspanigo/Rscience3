@@ -1,0 +1,131 @@
+\  
+
+The most important statistical output from Anova as R formatted objects.  
+\  
+
+::: {.panel-tabset}
+<!-- ## Model -->
+<!-- ```{r code04_01, child='file00_04_ClassRoom_01_model.qmd'} -->
+<!-- ``` -->
+
+<!-- ## Hypothesis -->
+<!-- ```{r code04_02, child='file00_04_ClassRoom_02_hypothesis.qmd'} -->
+<!-- ``` -->
+
+## User election
+### Selected variable and rol
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_selected_vars", caption_text = "")
+```
+
+### Alpha and confidence values
+```{r}
+#| echo: false
+
+fn_show_table_dynamic(object_name = "df_alpha_confidence", caption_text = "")
+```
+
+### Amount of data to analysis
+```{r}
+#| echo: false
+
+fn_show_table_dynamic(object_name = "df_show_n", caption_text = "")
+```
+
+
+## Anova Table
+
+### 1) Anova Table (Class Room format)
+```{r}
+#| echo: false
+knitr::asis_output("This is the table format detailed in the bibliography.")
+
+fn_show_table_dynamic(object_name = "df_table_anova_classroom", caption_text = "")
+```
+
+
+### 2) Anova Table (R format)
+```{r}
+#| echo: false
+knitr::asis_output("The original R output does not contain the Source of Variation column, and it does not detail the row for the total source of variation.")
+
+fn_show_table_dynamic(object_name = "df_table_anova", caption_text = "")
+```
+
+
+
+
+
+
+## Tukey Test
+
+### 1) Tukey Test (Class Room format)
+```{r}
+#| echo: false
+knitr::asis_output("This is the table format detailed in the bibliography.")
+
+fn_show_table_dynamic(object_name = "df_tukey_table_classroom", caption_text = "")
+```
+
+### 2) Special plot for Tukey test
+```{r}
+#| echo: false
+knitr::asis_output("The means of each factor level are detailed with the standard error derived from the model.  
+                   The statistical groups from the Tukey test are detailed for each factor level.")
+```
+```{r}
+#| echo: false
+
+plot007_factor
+```
+
+### 3) Full info from Tukey (R format)
+```{r}
+#| echo: false
+knitr::asis_output("The Tukey table is only one part of all the information contained within the Tukey test.  
+                   The Tukey test contains more details that may be relevant, such as the honest significant difference (HSD).")
+
+```
+```{r}
+#| echo: false
+tukey01_full_groups
+```
+
+### 4) Pairs comparation from Tukey test (R format)
+```{r}
+#| echo: false
+knitr::asis_output("Internally, the Tukey test performs t-tests between all possible pairs of factor levels.  
+                   In each t-test, a p-value is obtained with which decisions are made. All pairs are detailed below.")
+```
+```{r}
+#| echo: false
+tukey02_full_pairs
+```
+
+
+
+
+
+
+## Requeriments
+```{r code04_03, child='file00_04_ClassRoom_03_requeriments.qmd'}
+```
+## Plots - Raw Data
+```{r code04_04, child='file00_04_ClassRoom_04_data_raw_plots.qmd'}
+```
+## Plots - Residuals
+```{r code04_05, child='file00_04_ClassRoom_05_residuals_raw_plots.qmd'}
+```
+
+<!-- ## Decision Plan -->
+<!-- ```{r code04_06, child='file00_04_ClassRoom_06_decision_plan.qmd'} -->
+<!-- ``` -->
+
+
+
+## FAQs
+```{r code04_08, child='file00_04_ClassRoom_08_FAQ.qmd'}
+```
+
+:::

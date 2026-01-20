@@ -1,0 +1,57 @@
+---
+title: ""
+format: 
+  html:
+    self-contained: true
+    embed-resources: true
+    toc: false
+    number-sections: false
+
+---
+
+::: {#the_theory}
+```{r  echo=FALSE, warning=FALSE, message=FALSE}
+library(here)
+```
+
+
+```{r  echo=FALSE}
+fns_path <- here::here("..", "common_files", "fns.R")
+fns_path <- "fns.R"
+source(fns_path)
+```
+
+```{r echo = FALSE, warning=FALSE}
+
+file_name_01_model <- 'z_file01_model.qmd'
+file_path_01_model <- here::here("part02_theory", file_name_01_model)
+
+file_name_02_hypothesis <- 'z_file02_hypothesis.qmd'
+file_path_02_hypothesis <- here::here("part02_theory", file_name_02_hypothesis)
+
+file_name_03_decision_plan <- 'z_file03_decision_plan.qmd'
+file_path_03_decision_plan <- here::here("part02_theory", file_name_03_decision_plan)
+
+```
+
+
+::: {.panel-tabset}
+## Model
+```{r  child = file_path_01_model}
+```
+
+
+## Hypothesis
+```{r  child=file_path_02_hypothesis}
+```
+  
+  
+## Decision Plan
+```{r  child=file_path_03_decision_plan}
+```
+  
+  
+:::
+
+
+:::

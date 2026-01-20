@@ -1,0 +1,305 @@
+---
+title: "Rscience"
+format: 
+  html: 
+    output-file: "report01_lab03_RUN_RQuarto_HIDDEN_RUNNER.html"
+    embed-resources: true
+execute: 
+  enabled: true
+---
+
+Tool: Rs003_LM_QQ_FIX_BAL_ANOVA_1Way_s001  
+QMD File name: report01_lab03_RUN_RQuarto_HIDDEN_RUNNER.qmd
+
+
+```{r step00_time_start, eval=TRUE, echo=FALSE, results='asis'}
+# Captura del tiempo inicial
+time_start <- Sys.time()
+
+cat("<b>Runner Execution Started:</b>", format(time_start, "%Y-%m-%d %H:%M:%S"), "<br>")
+cat("<hr>")
+```
+
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+# Libraries
+library("fs")
+library("knitr")
+library("tidyverse")
+library("kableExtra")
+
+# Funtions
+# source(file = "fn_local.R")
+source(file = "fn_actions.R")
+```
+
+---
+
+```{r basics, eval=TRUE, echo=FALSE, results='asis'}
+# Files
+   str_file_hidder_runner_html <- "report01_lab03_RUN_RQuarto_HIDDEN_RUNNER.html"
+
+# Folders
+   str_folder_input_external  <- "../lab01_RUN_create_files/zzz_output_local"
+   str_folder_output_external <- "../../zzz_zzz_output"
+   str_folder_output_local    <- "zzz_output_local"
+
+   
+```
+
+
+
+
+# Copying all qmd files from external input folder
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+# Folders
+str_folder_FROM <- str_folder_input_external
+str_folder_TO <- str_folder_output_local
+
+vector_qmd_file_paths_FROM <- list.files(path = str_folder_FROM , 
+                                            pattern = "\\.qmd$", 
+                                            full.names = T)
+vector_qmd_file_names <- basename(vector_qmd_file_paths_FROM)
+
+vector_qmd_file_paths_TO <- file.path(str_folder_TO, vector_qmd_file_names)
+
+
+```
+
+# Copying files FROM-TO.
+## FROM Folder: Folder external input must exists.
+```{r step02_01_01, eval=TRUE, echo=FALSE, results='asis'}
+step02_01_01 <- function(){
+  
+  the_output <- fn_check_single_folder(str_folder_target = str_folder_FROM)
+  if(!the_output) knitr::knit_exit()
+}
+step02_01_01()
+```
+
+## FROM files: files must exists.
+```{r step02_02_01, eval=TRUE, echo=FALSE, results='asis'}
+
+step02_02_01 <- function(){
+  
+
+
+
+the_output <- fn_check_multi_files(vector_paths = vector_qmd_file_paths_FROM)
+    if(!the_output) knitr::knit_exit()
+}
+step02_02_01()
+```
+
+
+
+## TO Folder: Folder local output must exists and be clean.
+```{r step02_03_01, eval=TRUE, echo=FALSE, results='asis'}
+
+step02_03_01 <- function(){
+  
+  the_output <- fn_check_single_folder(str_folder_target = str_folder_TO)
+  if(!the_output) knitr::knit_exit()
+}
+step02_03_01()
+```
+
+
+```{r step02_03_02, eval=TRUE, echo=FALSE, results='asis'}
+step02_03_02 <- function(){
+  
+  the_output <- fn_cleaning_single_folder(str_folder_target = str_folder_TO)
+  if(!the_output) knitr::knit_exit()
+}
+step02_03_02()
+```
+
+
+
+## TO files: files must not exists.
+```{r step02_04_01, eval=TRUE, echo=FALSE, results='asis'}
+
+  
+step02_04_01 <- function(){
+  
+  the_output <- fn_delete_multi_files(vector_paths = vector_qmd_file_paths_TO)
+  if(!the_output) knitr::knit_exit()
+}
+step02_04_01()
+```
+
+
+## Copying files FROM-TO.
+```{r step02_05_01, eval=TRUE, echo=FALSE, results='asis'}
+
+step02_05_01 <- function(){
+  
+the_output <- fn_copy_verify_multi_files(vector_from = vector_qmd_file_paths_FROM, 
+                           vector_to = vector_qmd_file_paths_TO)
+if(!the_output) knitr::knit_exit()
+}
+step02_05_01()
+```
+
+
+## Verify existence after copy on TO.
+```{r step02_05_02, eval=TRUE, echo=FALSE, results='asis'}
+
+step02_05_02 <- function(){
+  
+the_output <- fn_check_multi_files(vector_paths = vector_qmd_file_paths_TO)
+if(!the_output) knitr::knit_exit()
+}
+step02_05_02()
+```
+
+
+# Quarto - Render
+## Pre render
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+library("quarto")
+
+# Definimos la ruta de salida completa
+str_qmd_input_file_name <- "report01_lab01_CopyMod_RQuarto_01_ANOVA.qmd"
+str_html_output_file_name01 <- paste0(tools::file_path_sans_ext(str_qmd_input_file_name), ".html")
+str_html_output_file_name02 <- "zzz_output_report01_lab03_RQuarto.html"
+
+str_qmd_file_path <- file.path(str_folder_output_local, str_qmd_input_file_name)
+str_old_file_path <- file.path(str_folder_output_local, str_html_output_file_name01)
+str_new_file_path <- file.path(str_folder_output_local, str_html_output_file_name02)
+```
+
+```{r step03_01_01, eval=TRUE, echo=FALSE, results='asis'}
+
+step03_01_01 <- function(){
+  the_output <- fn_check_single_file(str_file_path = str_qmd_file_path)
+  if(!the_output) knitr::knit_exit()
+}
+step03_01_01()
+```
+
+```{r step03_02_01, eval=TRUE, echo=FALSE, results='asis'}
+step03_02_01 <- function(){
+  
+  the_output <- fn_delete_single_file(str_file_target = str_old_file_path)
+  if(!the_output) knitr::knit_exit()
+}
+step03_02_01()
+```
+
+```{r step03_03_01, eval=TRUE, echo=FALSE, results='asis'}
+step03_03_01 <- function(){
+  
+  the_output <- fn_delete_single_file(str_file_target = str_new_file_path)
+  if(!the_output) knitr::knit_exit()
+}
+step03_03_01()
+```
+
+## Render
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+
+step03_04_01 <- function(){
+  
+quarto::quarto_render(
+  input = str_qmd_file_path,
+  execute_dir = str_folder_output_local,
+  quiet = T
+)
+
+}
+step03_04_01()
+```
+
+
+## Post Render
+```{r step03_04_01, eval=TRUE, echo=FALSE, results='asis'}
+
+step03_04_01 <- function(){
+  the_output <- fn_check_single_file(str_file_path = str_old_file_path)
+  if(!the_output) knitr::knit_exit()
+}
+step03_04_01()
+```
+
+```{r step03_04_02, eval=TRUE, echo=FALSE, results='asis'}
+
+step03_04_02 <- function(){
+the_output <- fn_rename_single_file(str_path_from = str_old_file_path, 
+                      str_path_to = str_new_file_path)
+if(!the_output) knitr::knit_exit()
+}
+step03_04_02()
+```
+
+```{r step03_05_01, eval=TRUE, echo=FALSE, results='asis'}
+
+step03_05_01 <- function(){
+  the_output <- fn_check_single_file(str_file_path = str_new_file_path)
+  if(!the_output) knitr::knit_exit()
+}
+step03_05_01()
+```
+
+
+# Copy and past all "zzz_output" files to output user folder
+```{r step07_01_01, eval=TRUE, echo=FALSE, results='asis'}
+
+
+
+step07_01_01 <- function() {
+  cat("<b>Step 07: Final Distribution</b><br>")
+  
+  # Listar archivos de forma robusta
+# 1. Obtenemos TODOS los archivos de la carpeta local (sin carpetas)
+  all_items <- fs::dir_ls(str_folder_output_local, type = "file")
+  
+  # 2. Filtramos el vector basándonos SOLO en el nombre del archivo (basename)
+  # El patrón "zzz_output_" debe estar en el archivo, no en la carpeta.
+  files_from <- all_items[grepl("zzz_output_", fs::path_file(all_items))]
+  
+  if (length(files_from) == 0) {
+    cat("<span style='color: #dc3545;'>✘ <b>Error:</b> No output files found in local folder.</span><br>")
+    return(FALSE)
+  }
+  
+  # Construir rutas de destino de forma segura
+  files_to <- fs::path(str_folder_output_external, fs::path_file(files_from))
+
+  # Copiar y Verificar
+  the_output <- fn_copy_verify_multi_files(vector_from = files_from, 
+                                           vector_to   = files_to)
+  
+  if(!the_output) knitr::knit_exit()
+  return(invisible(TRUE))
+}
+step07_01_01()
+```
+
+
+# Final Summary
+```{r step_final_time_end, eval=TRUE, echo=FALSE, results='asis'}
+# 1. Cálculos de tiempo
+time_end <- Sys.time()
+time_duration <- difftime(time_end, time_start, units = "auto")
+str_duration <- format(time_duration, digits = 3)
+
+# 2. Conteo de archivos
+total_out <- length(list.files(str_folder_output_local, pattern = "^zzz_output_"))
+
+# 3. Construcción del HTML (Asegurando que no haya espacios extraños al inicio)
+html_summary <- paste0(
+  "<hr>",
+  "<div style='background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; font-family: sans-serif; color: #333;'>",
+  "  <b style='display: block; color: #495057; font-size: 1.1em; margin-bottom: 10px;'>🏁 Final Execution Summary</b>",
+  "  <div style='margin-bottom: 5px;'>🕒 <b>Start Time:</b> ", format(time_start, "%H:%M:%S"), "</div>",
+  "  <div style='margin-bottom: 5px;'>🏁 <b>End Time:&nbsp;</b> ", format(time_end, "%H:%M:%S"), "</div>",
+  "  <div style='margin-bottom: 5px;'>⌛ <b>Total Duration:</b> <span style='color: #007bff; font-weight: bold;'>", str_duration, "</span></div>",
+  "  <div style='margin-bottom: 5px;'>📦 <b>Generated Files:</b> ", total_out, " files in local output</div>",
+  "</div>",
+  "<div style='text-align: center; margin-top: 10px;'><small style='color: #6c757d;'>End of Rscience Automated Runner</small></div>"
+)
+
+# Usamos cat con fill = TRUE para asegurar que el buffer se limpie correctamente
+cat(html_summary, fill = TRUE)
+```

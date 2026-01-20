@@ -1,0 +1,116 @@
+
+```{r}
+#| echo: false
+
+vector_obj <- c("plot001_factor")
+mget(vector_obj)[[1]]
+
+```
+
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_table_factor_plot001", caption_text = "")
+
+```
+
+
+***
+
+
+
+```{r}
+#| echo: false
+
+vector_obj <- c("plot002_factor")
+mget(vector_obj)[[1]]
+```
+
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_table_factor_plot002", caption_text = "")
+
+```
+
+***
+
+
+```{r}
+#| echo: false
+
+vector_obj <- c("plot003_factor")
+mget(vector_obj)[[1]]
+```
+
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_table_factor_plot003", caption_text = "")
+
+```
+
+***
+
+```{r}
+#| echo: false
+
+vector_obj <- c("plot004_factor")
+mget(vector_obj)[[1]]
+```
+
+
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_table_factor_plot004", caption_text = "")
+
+```
+
+***
+
+```{r}
+#| echo: false
+
+vector_obj <- c("plot005_factor")
+mget(vector_obj)[[1]]
+```
+
+
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_table_factor_plot005", caption_text = "")
+
+```
+
+***
+
+```{r}
+#| echo: false
+
+vector_obj <- c("plot006_factor")
+mget(vector_obj)[[1]]
+```
+
+
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_table_factor_plot006", caption_text = "")
+
+```
+
+***
+
+```{r}
+#| echo: false
+
+vector_obj <- c("plot007_factor")
+mget(vector_obj)[[1]]
+```
+
+
+```{r}
+#| echo: false
+fn_show_table_dynamic(object_name = "df_table_factor_plot007", caption_text = "")
+
+```
+
+***
+
+

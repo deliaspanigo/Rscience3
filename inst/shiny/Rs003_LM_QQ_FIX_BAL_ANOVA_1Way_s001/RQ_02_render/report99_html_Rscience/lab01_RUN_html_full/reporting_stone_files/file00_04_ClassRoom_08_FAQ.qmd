@@ -1,0 +1,48 @@
+
+```{r aver33, eval=TRUE, include=FALSE}
+
+```
+
+
+En esta sección se dan un conjunto de preguntas tanto desde el punto de vista estadístico, informático o del diseño. Las preguntas y respuestas están mezcladas en su temática.
+
+### 1) ¿Es mejor el test de Anova que el test t?
+
+
+### 2) ¿Es lo mismo variable numérica que variable cuantitativa?.
+Rta: Es un error muy común. No. No es lo mismo.
+Una variable es numérica desde el punto de vista informático si la variable es representada con
+símbolos numéricos dentro del dataset.
+Si yo tengo una variable que tiene categorías representada con números entonces la variable no es numérica.
+Una variable cualitativa ordinal representada con números, como por ejemplo escala de dolor, índice de felicidad, cobertura de suelo determinada a ojo del operador, cuanto me gusta el helado de chocolate del 1 al 10, no son variable cuantitativas.
+
+Si la variable respuesta es cualitativa nominal representada con números o cualitativa ordinal representada con números, en ambos casos la variable es numérica pero no es cuantitativa. En esos casos ingresar al test de Anova es un error grave. El test de Anova es solo para variables cuantitativas.
+Si se tiene un factor y una variable respuesta cualitativa nominal representada con números, debiera tal vez realizarse un test Chi Cuadrado.
+Si se tiene un factor y una variable respuesta cualitativa ordinal representada con números, debería utilizarse herramientas estadísticas de Distribución Libre como es el test de Kruskal-Wallis.
+
+3) ¿Es mejor el test de Anova a 1 fActor que el Test de Kruskal-Wallis?
+Algo es mejor o peor en un contexto.
+La idea general de la bibliografía es que si hay un contexto en que podemos poner a prueba una característica de nuestra población con diferentes herramienta estadística, debemos elegir la más potente. Esto quiere decir que de las herramientas estadísticas disponibles y válidas para analizar mis datos, yo debo elegir aquella que tiene más chances de rechazar Ho. En esta frase recalco la palabra válidas.
+
+Si se tiene un factor con una variable respuesta, y la variable respuesta es cuantitativa, y al ingresar al test de Anova los residuos cumplen los requisitos de homogeneidad y normalidad, en ese caso yo tengo para elegir tanto Anova a 1 Factor como el Test de Kruskal-Wallis. En este contexto es mejor Anova que el test de Kruskal-Wallis.
+
+Si se tiene un factor con una variable respuesta, y la variable respuesta es cuantitativa, y al ingresar al test de Anova los residuos no cumplen todos los requisitos de homogeneidad y normalidad, en ese caso Anova ya no es válido como opción. Mi única opción en este contexto es Kruskal-Wallis.
+
+Si se tiene un factor con una variable respuesta, y la variable respuesta es cualitativa ordinal representada con números, Anova ya no es si quiera es una opción ya que no es válido trabajar dentro de anova con datos cualitativos (aunque estén representados con símbolos números). Mi única opción en este contexto es Kruskal-Wallis.
+
+Si se tiene un factor con una variable respuesta, y la variable respuesta es cualitativa nominal representada con números, en este contexto ni Anova ni Kruskal-Wallis son las herramientas correctas para analizar esos datos.
+
+
+### 3) ¿Es lo mismo la media de las medias que la media de toda la variable respuesta?
+Rta: No. Y es también un error común.
+Hablemos un poco antes de la media y la mediana.
+Aunque la media y la mediana pueden tener el mismo valor numérico, no son lo mismo. Que ocasionalmente puedan adquirir ambas el mismo valor no las hace el mismo concepto. La media y la mediana coinciden en cualquier distribución simétrica. Cuando se tienen distribuciones simétricas como es la distribuciòn normal, entonces coinciden media y mediana.
+
+Algo similar ocurre con la media de las medias y la media de toda la variable respuesta.
+La media de las medias será igual a la media de toda la variable respuesta cuando el "n" de todos los niveles del factor sea el mismo. Solo en ese caso coinciden.
+En Anova tenemos Mu, Tau y Mui, y entre otras cosas ocurre que la suma de los tau es cero.
+Eso solo ocurre si mu es estimada con la media de las medias.
+En Anova a 1 Factor, Mu, que se le suele decir la Media General, o la Esperanza General, es la media de las medias.
+Puede usted fácilmente corroborar esto calculando los valores Tau y la suma de los valores Tau para un caso y para el otro.
+
+
