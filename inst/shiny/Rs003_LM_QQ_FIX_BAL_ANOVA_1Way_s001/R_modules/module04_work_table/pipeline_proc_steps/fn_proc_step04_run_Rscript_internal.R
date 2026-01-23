@@ -21,11 +21,11 @@ fn_proc_step04_run_Rscript_internal <- function(state, my_pipeline_steps, list_b
     str_temp_output_folder_path <- list_bag_steps$temp_output_folder_path
 
     # Subfolder
-    str_subfolder <- file.path("report01_gen_files", "lab01_RUN_create_files")
+    str_subfolder <- file.path("pos03_01_action02_run_Rscript", "lab01_run_Rscript_internal")
     str_my_subfolder_path <- file.path(str_work_dir_temporal, str_subfolder)
 
     # qmd file
-    vector_qmd_file_name <- c("report01_lab01_step05_run_Rscript_internal_RUN_HIDDEN.qmd")
+    vector_qmd_file_name <- c("AAA_lab01_action02_000_run_Rscript_internal_HIDDEN_RUNNER.qmd")
     vector_qmd_file_path <- file.path(str_my_subfolder_path, vector_qmd_file_name)
 
 

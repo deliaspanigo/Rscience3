@@ -1,0 +1,30 @@
+# tools_config.yml
+version: "1.0"
+last_updated: "2024-01-15"
+author: "Tu Nombre"
+
+tools:
+
+  Rs001_DESCRIPTIVE_1C:
+    id: "desc_1c"
+    name: "Descriptive - 1 Categorical"
+    category: "Descriptive"
+    subcategory: "Univariate"
+    description: "Frequency analysis for one categorical variable"
+    keywords: "cuantitative table descriptive"
+    statistic_group: ["Descriptive"]
+    folder_scripts: ["Rs001_DESCRIPTIVE_1C_s001", "Rs001_DESCRIPTIVE_1C_s002"]
+    RShiny_module_file: "RShiny_modules.R"
+
+
+  Rs002_LM_QQ_FIX_ANOVA_01_1Way:
+    id: "anova_1way"
+    name: "Linear Model - Fixed Effects - Anova One Way"
+    category: "LM"
+    subcategory: "ANOVA"
+    description: "Linear Model - One-way ANOVA with fixed effects"
+    keywords: "anova fixed effects one way glm"
+    statistic_group: ["Linear Models"]
+    folder_scripts: ["Rs002_LM_QQ_FIX_ANOVA_01_1Way_s001", "Rs002_LM_QQ_FIX_ANOVA_01_1Way_s002"]
+    RShiny_module_file: "RShiny_modules.R"
+

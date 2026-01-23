@@ -15,6 +15,28 @@ module_render_ONE_outputs_server <- function(id, app_state, show_output = FALSE)
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    # Special fn
+    update_reactive_values <- function(rv_object, ..., values = list(...)) {
+      # 1. Validar que el objeto sea un reactiveValues
+      if (!shiny::is.reactivevalues(rv_object)) {
+        stop("El objeto proporcionado no es un objeto reactiveValues de Shiny.")
+      }
+
+      # 2. Obtener los campos permitidos (los que ya existen en el objeto)
+      # Usamos names(reactiveValuesToList()) para obtener las llaves actuales
+      fields_allowed <- names(shiny::reactiveValuesToList(rv_object))
+
+      nms <- names(values)
+
+      for (nm in nms) {
+        if (nm %in% fields_allowed) {
+          rv_object[[nm]] <- values[[nm]]
+        } else {
+          warning(sprintf("Campo '%s' no permitido para este objeto. Ignorado.", nm))
+        }
+      }
+    }
+
     # --- 1. State Variables ---
     start_running    <- reactiveVal(FALSE)
     is_done          <- reactiveVal(FALSE)
@@ -47,6 +69,34 @@ module_render_ONE_outputs_server <- function(id, app_state, show_output = FALSE)
         prefix = str_file_prefix,
         directoryPath = dirname(app_state$str_output_file_path)
       )
+    })
+
+    # --- 2.5 Auto-Detección de Archivo Existente ---
+    observe({
+      req(app_state$str_output_file_path)
+      path <- app_state$str_output_file_path
+
+      if (file.exists(path)) {
+        is_done(TRUE)
+        play_clicked(TRUE) # <--- IMPORTANTE: Esto deshabilita el botón Play
+
+        # Sincronizamos al Currier global para que otras instancias se enteren
+        if(!is.null(app_state$is_done) && !app_state$is_done) {
+          update_reactive_values(app_state, is_done = TRUE)
+        }
+      }
+    })
+
+    # --- 2.7 Sincronización desde el Estado Global ---
+    observe({
+      # Escuchamos el is_done del app_state (Currier)
+      req(app_state$is_done)
+
+      # Si el global es TRUE, actualizamos los locales de este módulo
+      if(app_state$is_done) {
+        is_done(TRUE)
+        play_clicked(TRUE)
+      }
     })
 
     # --- 3. Dynamic Modal UI ---
@@ -187,15 +237,22 @@ module_render_ONE_outputs_server <- function(id, app_state, show_output = FALSE)
     })
 
     output$main_render_RShiny <- renderUI({
-      str_text01_long <- "Rendering"
-      list_text <- app_state$text
-      if(!is.null(list_text$str_text01_long)) str_text01_long <- list_text$str_text01_long
+      str_text01_long <- app_state$text$str_text01_long %||% "Rendering"
 
+      # Cabecera siempre presente
+      header <- fluidRow(
+        column(6, h4(str_text01_long)),
+        column(6, div(uiOutput(ns("set_btn")), style = "float: right;"))
+      )
+
+      # Si NO se debe mostrar el output, solo retornamos la cabecera
+      if (!show_output) {
+        return(tagList(header))
+      }
+
+      # Si SÍ se debe mostrar, agregamos el visor o el placeholder
       tagList(
-        fluidRow(
-          column(6, h4(str_text01_long)),
-          column(6, div(uiOutput(ns("set_btn")), style = "float: right;"))
-        ),
+        header,
         hr(),
         if(is_done()){
           uiOutput(ns("viewer_html_pdf"))

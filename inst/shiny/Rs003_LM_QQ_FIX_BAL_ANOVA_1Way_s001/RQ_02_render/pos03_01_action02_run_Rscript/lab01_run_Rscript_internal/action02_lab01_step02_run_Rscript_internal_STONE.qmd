@@ -1,0 +1,252 @@
+---
+title: "Rscience - Hidden Runner"
+format: 
+  html: 
+    output-file: "action02_lab01_step02_run_Rscript_internal_STONE.html"
+    embed-resources: true
+    number-sections: true
+    number-depth: 3
+    include-in-header:
+      text: |
+        <style>
+        h1, h2, .title {
+          border-bottom: none !important;
+          margin-bottom: 10px;
+        }
+        </style>
+execute: 
+  enabled: true
+---
+
+Tool: Rs003_LM_QQ_FIX_BAL_ANOVA_1Way_s001  
+File name qmd: action02_lab01_step02_run_Rscript_internal_STONE.qmd
+File name html: action02_lab01_step02_run_Rscript_internal_STONE.html
+
+
+```{r step00_time_start, eval=TRUE, echo=FALSE, results='asis'}
+# Captura del tiempo inicial
+time_start <- Sys.time()
+
+cat("<b>Runner Execution Started:</b>", format(time_start, "%Y-%m-%d %H:%M:%S"), "<br>")
+cat("<hr>")
+```
+
+
+```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
+# Libraries
+library("fs")
+library("knitr")
+library("tidyverse")
+library("kableExtra")
+
+# Funtions
+source(file = "../../pos02_00_action_fn/fn_actions.R")
+```
+
+---
+
+```{r basics, eval=TRUE, echo=FALSE, results='asis'}
+# Files
+   str_file_stone_html <- "action02_lab01_step01_cleaning_STONE.html"
+   str_regex_remove_html_files <- ".html$"
+   str_file_name_Rscript_internal <- "zzz_output_action01_lab01_step04_Rscript_internal.R"
+   str_file_name_RData_Rscript_internal <- "zzz_output_action02_lab01_step02_RData_internal.RData"
+   
+# Folders
+   str_folder_output_local <- "zzz_output_local"
+   str_folder_output_external <- "../../zzz_zzz_output"
+
+# Paths
+   str_Rscript_internal_path_LOCAL    <- file.path(str_folder_output_local, str_file_name_Rscript_internal)
+   str_Rscript_internal_path_EXTERNAL    <- file.path(str_folder_output_external, str_file_name_Rscript_internal)
+
+   
+   str_RData_Rscript_internal_path_LOCAL    <- file.path(str_folder_output_local,  str_file_name_RData_Rscript_internal)
+   str_RData_Rscript_internal_path_EXTERNAL   <- file.path(str_folder_output_external,  str_file_name_RData_Rscript_internal)
+
+```
+
+# Basics status and cleaning.
+## Checking Stone HTML file at local folder.
+::: {.callout-note}
+File stone HTML must not exists or be deleted previous execution.
+::: 
+```{r step01_01_01, eval=TRUE, echo=FALSE, results='asis'}
+step01_01_01 <- function(){
+  
+  the_output <- fn_delete_single_file(str_file_path = str_file_stone_html)
+  if(!the_output) knitr::knit_exit()
+}
+step01_01_01()
+```
+
+## Checking output folder local.
+::: {.callout-note}
+Folder must exists.
+::: 
+```{r step01_04_01, eval=TRUE, echo=FALSE, results='asis'}
+step01_04_01 <- function(){
+  
+  the_output <- fn_check_single_folder(str_folder_path = str_folder_output_local)
+  if(!the_output) knitr::knit_exit()
+}
+step01_04_01()
+```
+
+
+## Copying for Rscript internal.
+::: {.callout-note}
+File Rscript internal must exists localy.  
+We take the file from external output folder.
+::: 
+```{r step01_05_01, eval=TRUE, echo=FALSE, results='asis'}
+step01_05_01 <- function(){
+  
+  the_output <- fn_check_single_file(str_file_path = str_Rscript_internal_path_EXTERNAL)
+  if(!the_output) knitr::knit_exit()
+}
+step01_05_01()
+```
+
+
+```{r step01_05_02, eval=TRUE, echo=FALSE, results='asis'}
+step01_05_02 <- function(){
+  
+  the_output <- fn_delete_single_file(str_file_path = str_Rscript_internal_path_LOCAL)
+  if(!the_output) knitr::knit_exit()
+}
+step01_05_02()
+```
+
+
+```{r step01_05_03, eval=TRUE, echo=FALSE, results='asis'}
+step01_05_03 <- function(){
+  
+  the_output <- fn_copy_verify_single_file(str_from = str_Rscript_internal_path_EXTERNAL, 
+                                           str_to = str_Rscript_internal_path_LOCAL)
+  if(!the_output) knitr::knit_exit()
+}
+step01_05_03()
+```
+
+## Cleaning ENV Rscript internal.
+::: {.callout-note}
+File ENV .RData from Rscript internal must be removed if exists.
+::: 
+```{r step01_06_01, eval=TRUE, echo=FALSE, results='asis'}
+step01_06_01 <- function(){
+  
+  the_output <- fn_delete_single_file(str_file_path = str_RData_Rscript_internal_path_LOCAL)
+  if(!the_output) knitr::knit_exit()
+}
+step01_06_01()
+```
+
+
+
+
+## Delete files from external output.
+::: {.callout-note}
+File .RData internal on the external output folder  must not exists or be deleted previous execution.
+
+::: 
+```{r step01_06_02, eval=TRUE, echo=FALSE, results='asis'}
+step01_06_02 <- function(){
+  # upgraded!
+  the_output <- fn_delete_multi_files_SUPER_POWER(vector_file_paths = str_RData_Rscript_internal_path_EXTERNAL)
+  if(!the_output) knitr::knit_exit()
+}
+step01_06_02()
+```
+
+
+# Running Rscript internal
+```{r step02_01_01, eval=TRUE, echo=FALSE, results='asis'}
+step02_01_01 <- function(){
+  
+    # 1. Definir rutas
+    script_path <- str_Rscript_internal_path_LOCAL
+    RData_output_path <- str_RData_Rscript_internal_path_LOCAL
+    
+    # 2. Crear un nuevo entorno vacío
+    script_env <- new.env()
+    
+    # 3. Ejecución Silenciosa y Controlada
+    cat(paste0("<b>Executing Internal Script:</b> <code>", fs::path_file(script_path), "</code><br>"))
+    cat("<small style='color: #6c757d; font-style: italic;'>Action: Running isolated process and capturing environment.</small><br>")
+    
+    exec_result <- tryCatch({
+      # Silenciamos cat(), print(), mensajes de carga y advertencias
+      capture.output({
+        suppressMessages(suppressWarnings({
+          sys.source(script_path, envir = script_env)
+        }))
+      })
+      TRUE # Retorno si todo sale bien
+    }, error = function(e) {
+      return(e$message) # Retorno del mensaje de error si falla
+    })
+    
+    # 4. Verificación y Guardado
+    if (isTRUE(exec_result)) {
+      # Guardar solo si la ejecución fue exitosa
+      save(list = ls(script_env), envir = script_env, file = RData_output_path)
+      
+      cat(paste0("<span style='color: #28a745;'>✔ <b>Success:</b> Environment exported to <code>", RData_output_path, "</code></span><br><br>"))
+      
+      # 5. Validación final del archivo físico
+      the_output <- fn_check_single_file(str_file_path = RData_output_path)
+      if(!the_output) knitr::knit_exit()
+    
+    } else {
+      # Reporte de error estético
+      cat("<span style='color: #dc3545;'>✘ <b>Runtime Error:</b> The script failed to complete.</span><br>")
+      cat(paste0("<div style='background-color: #fff5f5; border-left: 3px solid #dc3545; padding: 8px; margin-top: 5px;'>",
+                 "<small style='color: #b02a37;'><b>Technical Detail:</b> ", exec_result, "</small></div><br>"))
+      knitr::knit_exit()
+    }
+    
+  # the_output <- fn_delete_single_file(str_file_target = str_RData_ENV_internal_file_path)
+  # if(!the_output) knitr::knit_exit()
+}
+step02_01_01()
+```
+
+
+
+# Export zzz_output files and folders.
+```{r step_export, eval=TRUE, echo=FALSE, results='asis'}
+the_output <- fn_export_files_zzz_output(str_path_from = str_folder_output_local, 
+                                         str_path_to = str_folder_output_external,
+                                         bln_overwrite = FALSE,
+                                         bln_production = TRUE)
+if(!the_output) knitr::knit_exit()
+```
+
+
+
+# Final Summary
+```{r step_final_time_end, eval=TRUE, echo=FALSE, results='asis'}
+# 1. Cálculos de tiempo
+time_end <- Sys.time()
+time_duration <- difftime(time_end, time_start, units = "auto")
+str_duration <- format(time_duration, digits = 3)
+
+
+
+# 3. Construcción del HTML (Asegurando que no haya espacios extraños al inicio)
+html_summary <- paste0(
+  "<hr>",
+  "<div style='background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; font-family: sans-serif; color: #333;'>",
+  "  <b style='display: block; color: #495057; font-size: 1.1em; margin-bottom: 10px;'>🏁 Final Execution Summary</b>",
+  "  <div style='margin-bottom: 5px;'>🕒 <b>Start Time:</b> ", format(time_start, "%H:%M:%S"), "</div>",
+  "  <div style='margin-bottom: 5px;'>🏁 <b>End Time:&nbsp;</b> ", format(time_end, "%H:%M:%S"), "</div>",
+  "  <div style='margin-bottom: 5px;'>⌛ <b>Total Duration:</b> <span style='color: #007bff; font-weight: bold;'>", str_duration, "</span></div>",
+  "</div>",
+  "<div style='text-align: center; margin-top: 10px;'><small style='color: #6c757d;'>End of Rscience Automated Runner</small></div>"
+)
+
+# Usamos cat con fill = TRUE para asegurar que el buffer se limpie correctamente
+cat(html_summary, fill = TRUE)
+```
+

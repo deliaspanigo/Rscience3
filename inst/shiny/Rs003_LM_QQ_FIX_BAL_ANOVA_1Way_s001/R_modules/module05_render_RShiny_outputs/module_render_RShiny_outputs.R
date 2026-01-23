@@ -66,7 +66,7 @@ module_render_RShiny_outputs_server <- function(id, app_state) {
 
       # R script .R file
       # 1. Define the path
-      str_R_internal_script_file_name <- "zzz_output_report01_lab01_step05_ENV_Rscript_internal.RData"
+      str_R_internal_script_file_name <- "zzz_output_action02_lab01_step02_RData_internal.RData"
       str_R_internal_script_file_path <- file.path(str_subfolder_path, str_R_internal_script_file_name)
 
       # 2. Create an isolated environment

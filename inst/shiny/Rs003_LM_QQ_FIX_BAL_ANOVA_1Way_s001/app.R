@@ -133,13 +133,29 @@ server <- function(input, output, session) {
       icon = icon("chart-bar"),
       order = 8
     ),
+    outputs_png = list(
+      btn_id = "btn_png",
+      btn_label = "Outputs PNG",
+      btn_enable = TRUE,
+      tab_id = "tab_png",
+      icon = icon("chart-bar"),
+      order = 9
+    ),
     outputs_html_full = list(
       btn_id = "btn_html_full",
       btn_label = "Outputs HTML Full",
       btn_enable = TRUE,
       tab_id = "tab_html_full",
       icon = icon("chart-bar"),
-      order = 9
+      order = 10
+    ),
+    outputs_reporting = list(
+      btn_id = "btn_reporting",
+      btn_label = "Reporting",
+      btn_enable = TRUE,
+      tab_id = "tab_reporting",
+      icon = icon("chart-bar"),
+      order = 11
     )
   )
 
@@ -201,27 +217,38 @@ server <- function(input, output, session) {
       tabPanel(
         title = "Outputs - PDF",
         value = buttons_info$"outputs_pdf"$"tab_id",
-        module_render_ONE_outputs_ui("module_render_ONE_PDF")
+        module_render_ONE_outputs_ui("module_render_ONE_PDF_01")
       ),
       tabPanel(
         title = "Outputs - Revealjs",
         value = buttons_info$"outputs_reveal"$"tab_id",
-        module_render_ONE_outputs_ui("module_render_ONE_REVEAL")
+        module_render_ONE_outputs_ui("module_render_ONE_REVEAL_01")
       ),
       tabPanel(
         title = "Outputs - docx",
         value = buttons_info$"outputs_docx"$"tab_id",
-        module_render_ONE_outputs_ui("module_render_ONE_DOCX")
+        module_render_ONE_outputs_ui("module_render_ONE_DOCX_01")
       ),
       tabPanel(
         title = "Outputs - xlsx",
         value = buttons_info$"outputs_xlsx"$"tab_id",
-        module_render_ONE_outputs_ui("module_render_ONE_XLSX")
+        module_render_ONE_outputs_ui("module_render_ONE_XLSX_01")
+      ),
+      tabPanel(
+        title = "Outputs - PNG",
+        value = buttons_info$"outputs_png"$"tab_id",
+        module_render_ONE_outputs_ui("module_render_ONE_PNG_01")
       ),
       tabPanel(
         title = "Outputs - HTML Full",
         value = buttons_info$"outputs_html_full"$"tab_id",
-        module_render_ONE_outputs_ui("module_render_ONE_HTML_FULL")
+        module_render_ONE_outputs_ui("module_render_ONE_HTML_FULL_01")
+      ),
+      tabPanel(
+        title = "Outputs - Reporting",
+        value = buttons_info$"outputs_reporting"$"tab_id",
+        uiOutput("rendering")
+        # module_render_ONE_outputs_ui("module_render_ONE_HTML_FULL")
       )
       # tabPanel(
       #   title = "Proc",
@@ -338,240 +365,633 @@ server <- function(input, output, session) {
     app_state = the_currier_render_RShiny# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
   )
 
+  ##############################################################################
+  update_reactive_values <- function(rv_object, ..., values = list(...)) {
+    # 1. Validar que el objeto sea un reactiveValues
+    if (!shiny::is.reactivevalues(rv_object)) {
+      stop("El objeto proporcionado no es un objeto reactiveValues de Shiny.")
+    }
+
+    # 2. Obtener los campos permitidos (los que ya existen en el objeto)
+    # Usamos names(reactiveValuesToList()) para obtener las llaves actuales
+    fields_allowed <- names(shiny::reactiveValuesToList(rv_object))
+
+    nms <- names(values)
+
+    for (nm in nms) {
+      if (nm %in% fields_allowed) {
+        rv_object[[nm]] <- values[[nm]]
+      } else {
+        warning(sprintf("Campo '%s' no permitido para este objeto. Ignorado.", nm))
+      }
+    }
+  }
+  ##############################################################################
+
+
 
   # Server 06. Output PDF ------------------------------------------------------
   the_currier_render_PDF <- reactiveValues(start_running = FALSE,
-                                              is_done = FALSE)
+                                          text = list(
+                                                 "str_text01_long" = "PDF Report",
+                                                 "str_text01_short" = "Rendering PDF Report"
+                                               ),
+                                          str_temp_work_folder_path = NULL,
+                                          str_qmd_file_path = NULL,
+                                          str_output_file_path = NULL,
+                                          str_download_file_name = NULL,
+                                          is_done = FALSE
+                                          )
 
   observe({
     req(app_state_work_table$is_done)
-    the_currier_render_PDF$start_running <- app_state_work_table$is_done
-    the_currier_render_PDF$str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
+
+    # Basics
+      start_running <- app_state_work_table$is_done
+
+    # Files
+      str_qmd_file_name   <- "report02_lab01_render_pdf_HIDDEN_RUNNER.qmd"
+      str_output_file_name <- "zzz_output_report02_lab01_render_pdf_STONE.pdf"
+      str_download_file_name <- "report02_pdf_Rscience.pdf"
+
+    # Folders
+      str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
+
+      str_subfolder_report <- file.path("report02_pdf", "lab01_RUN_pdf")
+      str_folder_report_path <- file.path(str_temp_work_folder_path, str_subfolder_report)
+
+      str_subfolder_output <- "zzz_zzz_output"
+      str_folder_output_path <- file.path(str_temp_work_folder_path, str_subfolder_output)
 
 
-    # Folder Temp
-    str_work_folder_path <- the_currier_render_PDF$str_temp_work_folder_path
+    # Paths
+      str_qmd_file_path <- file.path(str_folder_report_path, str_qmd_file_name)
+      str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
 
-    # Output folder and file
-    str_subfolder_output <- "zzz_zzz_output"
-    str_folder_output_path <- file.path(str_work_folder_path, str_subfolder_output)
-    str_output_file_name <- "zzz_output_report02_lab01_render_pdf_STONE.pdf"
-    str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
-    the_currier_render_PDF$str_output_file_path <- str_output_file_path
+    # More Basics
+      is_done <- file.exists(str_output_file_path)
 
-    # Download file name
-    the_currier_render_PDF$str_download_file_name <- "report02_pdf_Rscience.pdf"
-
-    # Report folder and qmd file
-    str_subfolder_report <- file.path("report02_pdf", "lab01_RUN_pdf")
-    str_folder_report_path <- file.path(str_work_folder_path, str_subfolder_report)
-    str_qmd_file_name   <- "report02_lab01_render_pdf_HIDDEN_RUNNER.qmd"
-    str_qmd_file_path <- file.path(str_folder_report_path, str_qmd_file_name)
-    the_currier_render_PDF$str_qmd_file_path <- str_qmd_file_path
-
-
-    the_currier_render_PDF$text <- list(
-      "str_text01_long" = "PDF Report",
-      "str_text01_short" = "Rendering PDF Report"
-    )
+      update_reactive_values(
+        the_currier_render_PDF,
+        start_running = start_running,
+        str_temp_work_folder_path = str_temp_work_folder_path,
+        str_qmd_file_path = str_qmd_file_path,
+        str_output_file_path = str_output_file_path,
+        str_download_file_name = str_download_file_name,
+        is_done = is_done
+      )
 
   })
 
 
 
-  app_state_render_PDF <-  module_render_ONE_outputs_server(
-    id = "module_render_ONE_PDF",
+  app_state_render_PDF_01 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_PDF_01",
     app_state = the_currier_render_PDF,
     show_output = T# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
   )
 
+  app_state_render_PDF_02 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_PDF_02",
+    app_state = the_currier_render_PDF,
+    show_output = F# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
+  )
+
+  super_control_pdf <- reactive({
+    req(!the_currier_render_PDF$is_done)
+    req(the_currier_render_PDF$start_running)
+
+    is_done01 <- app_state_render_PDF_01$is_done()
+    is_done02 <- app_state_render_PDF_02$is_done()
+
+    IS_DONE <- is_done01 | is_done02
+    IS_DONE
+  })
+
+  observe({
+    req(super_control_pdf())
+
+    is_done <- super_control_pdf()
+
+      update_reactive_values(
+        the_currier_render_PDF,
+        is_done = is_done
+        )
+
+  })
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+
+
+
+
+
 
   # Server 07. Output Revealjs ------------------------------------------------------
   the_currier_render_REVEAL <- reactiveValues(start_running = FALSE,
-                                           is_done = FALSE)
+                                              text = list(
+                                                "str_text01_long" = "Revealjs Report",
+                                                "str_text01_short" = "Rendering Revealjs Report"
+                                              ),
+                                              str_temp_work_folder_path = NULL,
+                                              str_qmd_file_path = NULL,
+                                              str_output_file_path = NULL,
+                                              str_download_file_name = NULL,
+                                              is_done = FALSE
+  )
 
   observe({
     req(app_state_work_table$is_done)
-    the_currier_render_REVEAL$start_running <- app_state_work_table$is_done
-    the_currier_render_REVEAL$str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
 
+    # Basics
+    start_running <- app_state_work_table$is_done
 
-    # Folder Temp
-    str_work_folder_path <- the_currier_render_REVEAL$str_temp_work_folder_path
+    # Files
+    str_qmd_file_name      <- "report03_lab01_render_revealjs_HIDDEN_RUNNER.qmd"
+    str_output_file_name   <- "zzz_output_report03_lab01_render_revealjs_STONE.html"
+    str_download_file_name <- "report03_revealjs_Rscience.html"
 
-    # Output folder and file
-    str_subfolder_output <- "zzz_zzz_output"
-    str_folder_output_path <- file.path(str_work_folder_path, str_subfolder_output)
-    str_output_file_name <- "zzz_output_report03_lab01_render_revealjs_STONE.html"
-    str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
-    the_currier_render_REVEAL$str_output_file_path <- str_output_file_path
+    # Folders
+    str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
 
-    # Download file name
-    the_currier_render_REVEAL$str_download_file_name <- "report03_revealjs_Rscience.html"
-
-    # Report folder and qmd file
     str_subfolder_report <- file.path("report03_revealjs", "lab01_RUN_revealjs")
-    str_folder_report_path <- file.path(str_work_folder_path, str_subfolder_report)
-    str_qmd_file_name   <- "report03_lab01_render_revealjs_HIDDEN_RUNNER.qmd"
+    str_folder_report_path <- file.path(str_temp_work_folder_path, str_subfolder_report)
+
+    str_subfolder_output <- "zzz_zzz_output"
+    str_folder_output_path <- file.path(str_temp_work_folder_path, str_subfolder_output)
+
+
+    # Paths
     str_qmd_file_path <- file.path(str_folder_report_path, str_qmd_file_name)
-    the_currier_render_REVEAL$str_qmd_file_path <- str_qmd_file_path
+    str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
 
+    # More Basics
+    is_done <- file.exists(str_output_file_path)
 
-    the_currier_render_REVEAL$text <- list(
-      "str_text01_long" = "Revealjs Report",
-      "str_text01_short" = "Rendering Revealjs Report"
+    update_reactive_values(
+      the_currier_render_REVEAL,
+      start_running = start_running,
+      str_temp_work_folder_path = str_temp_work_folder_path,
+      str_qmd_file_path = str_qmd_file_path,
+      str_output_file_path = str_output_file_path,
+      str_download_file_name = str_download_file_name,
+      is_done = is_done
     )
+
 
   })
 
 
 
-  app_state_render_REVEAL <-  module_render_ONE_outputs_server(
-    id = "module_render_ONE_REVEAL",
+  app_state_render_REVEAL_01 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_REVEAL_01",
     app_state = the_currier_render_REVEAL,
     show_output = T# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
   )
 
+  app_state_render_REVEAL_02 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_REVEAL_02",
+    app_state = the_currier_render_REVEAL,
+    show_output = F# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
+  )
 
-  # Server 09. Output Docx ------------------------------------------------------
+  super_control_reveal <- reactive({
+    req(!the_currier_render_REVEAL$is_done)
+    req(the_currier_render_REVEAL$start_running)
+
+    is_done01 <- app_state_render_REVEAL_01$is_done()
+    is_done02 <- app_state_render_REVEAL_02$is_done()
+
+    IS_DONE <- is_done01 | is_done02
+    IS_DONE
+  })
+
+  observe({
+    req(super_control_reveal())
+
+    is_done <- super_control_reveal()
+
+    update_reactive_values(
+      the_currier_render_REVEAL,
+      is_done = is_done
+    )
+
+  })
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+
+
+
+
+  # Server 07. Output DOCX ------------------------------------------------------
   the_currier_render_DOCX <- reactiveValues(start_running = FALSE,
-                                              is_done = FALSE)
+                                            text = list(
+                                              "str_text01_long" = "Docx Report",
+                                              "str_text01_short" = "Rendering Docx Report"
+                                            ),
+                                            str_temp_work_folder_path = NULL,
+                                            str_qmd_file_path = NULL,
+                                            str_output_file_path = NULL,
+                                            str_download_file_name = NULL,
+                                            is_done = FALSE
+  )
 
   observe({
     req(app_state_work_table$is_done)
-    the_currier_render_DOCX$start_running <- app_state_work_table$is_done
-    the_currier_render_DOCX$str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
 
+    # Basics
+    start_running <- app_state_work_table$is_done
 
-    # Folder Temp
-    str_work_folder_path <- the_currier_render_DOCX$str_temp_work_folder_path
+    # Files
+    str_qmd_file_name      <- "report04_lab01_render_docx_HIDDEN_RUNNER.qmd"
+    str_output_file_name   <- "zzz_output_report04_lab01_render_docx_STONE.docx"
+    str_download_file_name <- "report04_docx_Rscience.docx"
 
-    # Output folder and file
-    str_subfolder_output <- "zzz_zzz_output"
-    str_folder_output_path <- file.path(str_work_folder_path, str_subfolder_output)
-    str_output_file_name <- "zzz_output_report04_lab01_render_docx_STONE.docx"
-    str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
-    the_currier_render_DOCX$str_output_file_path <- str_output_file_path
+    # Folders
+    str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
 
-    # Download file name
-    the_currier_render_DOCX$str_download_file_name <- "report04_docx_Rscience.docx"
-
-    # Report folder and qmd file
     str_subfolder_report <- file.path("report04_docx", "lab01_render_docx")
-    str_folder_report_path <- file.path(str_work_folder_path, str_subfolder_report)
-    str_qmd_file_name   <- "report04_lab01_render_docx_HIDDEN_RUNNER.qmd"
+    str_folder_report_path <- file.path(str_temp_work_folder_path, str_subfolder_report)
+
+    str_subfolder_output <- "zzz_zzz_output"
+    str_folder_output_path <- file.path(str_temp_work_folder_path, str_subfolder_output)
+
+
+    # Paths
     str_qmd_file_path <- file.path(str_folder_report_path, str_qmd_file_name)
-    the_currier_render_DOCX$str_qmd_file_path <- str_qmd_file_path
+    str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
 
+    # More Basics
+    is_done <- file.exists(str_output_file_path)
 
-    the_currier_render_DOCX$text <- list(
-      "str_text01_long" = "Docx Report",
-      "str_text01_short" = "Rendering Docx Report"
+    update_reactive_values(
+      the_currier_render_DOCX,
+      start_running = start_running,
+      str_temp_work_folder_path = str_temp_work_folder_path,
+      str_qmd_file_path = str_qmd_file_path,
+      str_output_file_path = str_output_file_path,
+      str_download_file_name = str_download_file_name,
+      is_done = is_done
     )
+
 
   })
 
 
 
-  app_state_render_DOCX <-  module_render_ONE_outputs_server(
-    id = "module_render_ONE_DOCX",
+  app_state_render_DOCX_01 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_DOCX_01",
     app_state = the_currier_render_DOCX,
     show_output = T# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
   )
 
+  app_state_render_DOCX_02 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_DOCX_02",
+    app_state = the_currier_render_DOCX,
+    show_output = F# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
+  )
 
-  # Server 10. Output XLSX ------------------------------------------------------
+  super_control_docx <- reactive({
+    req(!the_currier_render_DOCX$is_done)
+    req(the_currier_render_DOCX$start_running)
+
+    is_done01 <- app_state_render_DOCX_01$is_done()
+    is_done02 <- app_state_render_DOCX_02$is_done()
+
+    IS_DONE <- is_done01 | is_done02
+    IS_DONE
+  })
+
+  observe({
+    req(super_control_docx())
+
+    is_done <- super_control_docx()
+
+    update_reactive_values(
+      the_currier_render_DOCX,
+      is_done = is_done
+    )
+
+  })
+
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+
+
+
+
+  # Server 08. Output XLSX ------------------------------------------------------
   the_currier_render_XLSX <- reactiveValues(start_running = FALSE,
-                                            is_done = FALSE)
+                                            text = list(
+                                              "str_text01_long" = "XLSX Report",
+                                              "str_text01_short" = "Rendering XLSX Report"
+                                            ),
+                                            str_temp_work_folder_path = NULL,
+                                            str_qmd_file_path = NULL,
+                                            str_output_file_path = NULL,
+                                            str_download_file_name = NULL,
+                                            is_done = FALSE
+  )
 
   observe({
     req(app_state_work_table$is_done)
-    the_currier_render_XLSX$start_running <- app_state_work_table$is_done
-    the_currier_render_XLSX$str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
+
+    # Basics
+    start_running <- app_state_work_table$is_done
+
+    # Files
+    str_qmd_file_name      <- "report05_lab01_render_xlsx_HIDDEN_RUNNER.qmd"
+    str_output_file_name   <- "zzz_output_report05_lab01_render_xlsx_STONE.xlsx"
+    str_download_file_name <- "report05_xlsx_Rscience.xlsx"
+
+    # Folders
+    str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
+
+    str_subfolder_report   <- file.path("report05_xlsx", "lab01_render_xlsx")
+    str_folder_report_path <- file.path(str_temp_work_folder_path, str_subfolder_report)
+
+    str_subfolder_output   <- "zzz_zzz_output"
+    str_folder_output_path <- file.path(str_temp_work_folder_path, str_subfolder_output)
 
 
-    # Folder Temp
-    str_work_folder_path <- the_currier_render_XLSX$str_temp_work_folder_path
-
-    # Output folder and file
-    str_subfolder_output <- "zzz_zzz_output"
-    str_folder_output_path <- file.path(str_work_folder_path, str_subfolder_output)
-    str_output_file_name <- "zzz_output_report05_lab01_render_xlsx_STONE.xlsx"
+    # Paths
+    str_qmd_file_path    <- file.path(str_folder_report_path, str_qmd_file_name)
     str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
-    the_currier_render_XLSX$str_output_file_path <- str_output_file_path
 
-    # Download file name
-    the_currier_render_XLSX$str_download_file_name <- "report05_xlsx_Rscience.xlsx"
+    # More Basics
+    is_done <- file.exists(str_output_file_path)
 
-    # Report folder and qmd file
-    str_subfolder_report <- file.path("report05_xlsx", "lab01_render_xlsx")
-    str_folder_report_path <- file.path(str_work_folder_path, str_subfolder_report)
-    str_qmd_file_name   <- "report05_lab01_render_xlsx_HIDDEN_RUNNER.qmd"
-    str_qmd_file_path <- file.path(str_folder_report_path, str_qmd_file_name)
-    the_currier_render_XLSX$str_qmd_file_path <- str_qmd_file_path
-
-
-    the_currier_render_XLSX$text <- list(
-      "str_text01_long" = "xlsx Report",
-      "str_text01_short" = "Rendering xlsx Report"
+    update_reactive_values(
+      the_currier_render_XLSX,
+      start_running = start_running,
+      str_temp_work_folder_path = str_temp_work_folder_path,
+      str_qmd_file_path = str_qmd_file_path,
+      str_output_file_path = str_output_file_path,
+      str_download_file_name = str_download_file_name,
+      is_done = is_done
     )
+
 
   })
 
 
 
-  app_state_render_XLSX <-  module_render_ONE_outputs_server(
-    id = "module_render_ONE_XLSX",
+  app_state_render_XLSX_01 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_XLSX_01",
     app_state = the_currier_render_XLSX,
     show_output = T# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
   )
 
+  app_state_render_XLSX_02 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_XLSX_02",
+    app_state = the_currier_render_XLSX,
+    show_output = F# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
+  )
 
-  # Server 09. Output HTML Rscience ------------------------------------------------------
-  the_currier_render_HTML_FULL <- reactiveValues(start_running = FALSE,
-                                              is_done = FALSE)
+  super_control_xlsx <- reactive({
+    req(!the_currier_render_XLSX$is_done)
+    req(the_currier_render_XLSX$start_running)
+
+    is_done01 <- app_state_render_XLSX_01$is_done()
+    is_done02 <- app_state_render_XLSX_02$is_done()
+
+    IS_DONE <- is_done01 | is_done02
+    IS_DONE
+  })
+
+  observe({
+    req(super_control_xlsx())
+
+    is_done <- super_control_xlsx()
+
+    update_reactive_values(
+      the_currier_render_XLSX,
+      is_done = is_done
+    )
+
+  })
+
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+
+
+  # Server 08. Output PNG ------------------------------------------------------
+  the_currier_render_PNG <- reactiveValues(start_running = FALSE,
+                                           text = list(
+                                             "str_text01_long" = "PNG Report",
+                                             "str_text01_short" = "Rendering PNG Report"
+                                           ),
+                                           str_temp_work_folder_path = NULL,
+                                           str_qmd_file_path = NULL,
+                                           str_output_file_path = NULL,
+                                           str_download_file_name = NULL,
+                                           is_done = FALSE
+  )
 
   observe({
     req(app_state_work_table$is_done)
-    the_currier_render_HTML_FULL$start_running <- app_state_work_table$is_done
-    the_currier_render_HTML_FULL$str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
+
+    # Basics
+    start_running <- app_state_work_table$is_done
+
+    # Files
+    str_qmd_file_name      <- "report06_lab01_render_png_HIDDEN_RUNNER.qmd"
+    str_output_file_name   <- "zzz_output_report06_lab01_render_png.zip"
+    str_download_file_name <- "report06_png_Rscience.zip"
+
+    # Folders
+    str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
+
+    str_subfolder_report   <- file.path("report06_png", "lab01_render_png")
+    str_folder_report_path <- file.path(str_temp_work_folder_path, str_subfolder_report)
+
+    str_subfolder_output   <- "zzz_zzz_output"
+    str_folder_output_path <- file.path(str_temp_work_folder_path, str_subfolder_output)
 
 
-    # Folder Temp
-    str_work_folder_path <- the_currier_render_HTML_FULL$str_temp_work_folder_path
-
-    # Output folder and file
-    str_subfolder_output <- "zzz_zzz_output"
-    str_folder_output_path <- file.path(str_work_folder_path, str_subfolder_output)
-    str_output_file_name <- "zzz_output_report99_lab01_render_html_full_STONE.html"
+    # Paths
+    str_qmd_file_path    <- file.path(str_folder_report_path, str_qmd_file_name)
     str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
-    the_currier_render_HTML_FULL$str_output_file_path <- str_output_file_path
 
-    # Download file name
-    the_currier_render_HTML_FULL$str_download_file_name <- "report04_html_full_Rscience.html"
+    # More Basics
+    is_done <- file.exists(str_output_file_path)
 
-    # Report folder and qmd file
-    str_subfolder_report <- file.path("report99_html_Rscience", "lab01_RUN_html_full")
-    str_folder_report_path <- file.path(str_work_folder_path, str_subfolder_report)
-    str_qmd_file_name   <- "report99_lab01_render_html_full_HIDDEN_RUNNER.qmd"
-    str_qmd_file_path <- file.path(str_folder_report_path, str_qmd_file_name)
-    the_currier_render_HTML_FULL$str_qmd_file_path <- str_qmd_file_path
-
-
-    the_currier_render_HTML_FULL$text <- list(
-      "str_text01_long" = "HTML Full Report",
-      "str_text01_short" = "Rendering HTMl Full Report"
+    update_reactive_values(
+      the_currier_render_PNG,
+      start_running = start_running,
+      str_temp_work_folder_path = str_temp_work_folder_path,
+      str_qmd_file_path = str_qmd_file_path,
+      str_output_file_path = str_output_file_path,
+      str_download_file_name = str_download_file_name,
+      is_done = is_done
     )
+
 
   })
 
 
 
-  app_state_render_HTML_FULL <-  module_render_ONE_outputs_server(
-    id = "module_render_ONE_HTML_FULL",
+  app_state_render_PNG_01 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_PNG_01",
+    app_state = the_currier_render_PNG,
+    show_output = T# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
+  )
+
+  app_state_render_PNG_02 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_PNG_02",
+    app_state = the_currier_render_PNG,
+    show_output = F# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
+  )
+
+  super_control_png <- reactive({
+    req(!the_currier_render_PNG$is_done)
+    req(the_currier_render_PNG$start_running)
+
+    is_done01 <- app_state_render_PNG_01$is_done()
+    is_done02 <- app_state_render_PNG_02$is_done()
+
+    IS_DONE <- is_done01 | is_done02
+    IS_DONE
+  })
+
+  observe({
+    req(super_control_png())
+
+    is_done <- super_control_png()
+
+    update_reactive_values(
+      the_currier_render_PNG,
+      is_done = is_done
+    )
+
+  })
+
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+
+
+
+  # Server 08. Output HTML_FULL ------------------------------------------------------
+  the_currier_render_HTML_FULL <- reactiveValues(start_running = FALSE,
+                                                 text = list(
+                                                   "str_text01_long" = "HTML FULL Report",
+                                                   "str_text01_short" = "Rendering HTML FULL Report"
+                                                 ),
+                                                 str_temp_work_folder_path = NULL,
+                                                 str_qmd_file_path = NULL,
+                                                 str_output_file_path = NULL,
+                                                 str_download_file_name = NULL,
+                                                 is_done = FALSE
+  )
+
+  observe({
+    req(app_state_work_table$is_done)
+
+    # Basics
+    start_running <- app_state_work_table$is_done
+
+    # Files
+    str_qmd_file_name      <- "report99_lab01_render_html_full_HIDDEN_RUNNER.qmd"
+    str_output_file_name   <- "zzz_output_report99_lab01_render_html_full_STONE.html"
+    str_download_file_name <- "report04_html_full_Rscience.html"
+
+    # Folders
+    str_temp_work_folder_path <- app_state_work_table$str_temp_work_folder_path
+
+    str_subfolder_report   <- file.path("report99_html_Rscience", "lab01_RUN_html_full")
+    str_folder_report_path <- file.path(str_temp_work_folder_path, str_subfolder_report)
+
+    str_subfolder_output   <- "zzz_zzz_output"
+    str_folder_output_path <- file.path(str_temp_work_folder_path, str_subfolder_output)
+
+
+    # Paths
+    str_qmd_file_path    <- file.path(str_folder_report_path, str_qmd_file_name)
+    str_output_file_path <- file.path(str_folder_output_path, str_output_file_name)
+
+    # More Basics
+    is_done <- file.exists(str_output_file_path)
+
+    update_reactive_values(
+      the_currier_render_HTML_FULL,
+      start_running = start_running,
+      str_temp_work_folder_path = str_temp_work_folder_path,
+      str_qmd_file_path = str_qmd_file_path,
+      str_output_file_path = str_output_file_path,
+      str_download_file_name = str_download_file_name,
+      is_done = is_done
+    )
+
+
+  })
+
+
+
+  app_state_render_HTML_FULL_01 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_HTML_FULL_01",
     app_state = the_currier_render_HTML_FULL,
     show_output = T# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
   )
+
+  app_state_render_HTML_FULL_02 <-  module_render_ONE_outputs_server(
+    id = "module_render_ONE_HTML_FULL_02",
+    app_state = the_currier_render_HTML_FULL,
+    show_output = F# <-- ¡OBJETO REACTIVO, NO UNA LISTA!
+  )
+
+  super_control_html_full <- reactive({
+    req(!the_currier_render_HTML_FULL$is_done)
+    req(the_currier_render_HTML_FULL$start_running)
+
+    is_done01 <- app_state_render_HTML_FULL_01$is_done()
+    is_done02 <- app_state_render_HTML_FULL_02$is_done()
+
+    IS_DONE <- is_done01 | is_done02
+    IS_DONE
+  })
+
+  observe({
+    req(super_control_html_full())
+
+    is_done <- super_control_html_full()
+
+    update_reactive_values(
+      the_currier_render_HTML_FULL,
+      is_done = is_done
+    )
+
+  })
+
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+  ##############################################################################
+
+
+
+
+  # Server12
+
+
+  output$"rendering" <- renderUI({
+    div(module_render_ONE_outputs_ui("module_render_ONE_PDF_02"),
+        module_render_ONE_outputs_ui("module_render_ONE_REVEAL_02"),
+        module_render_ONE_outputs_ui("module_render_ONE_DOCX_02"),
+        module_render_ONE_outputs_ui("module_render_ONE_XLSX_02"),
+        module_render_ONE_outputs_ui("module_render_ONE_PNG_02"),
+        module_render_ONE_outputs_ui("module_render_ONE_HTML_FULL_02"))
+  })
+
 }
 
 shinyApp(ui, server)
