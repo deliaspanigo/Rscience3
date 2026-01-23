@@ -13,8 +13,8 @@ ui <- page_sidebar(
   sidebar = sidebar(
     navset_pill_list(
       id = "menu_tools", well = FALSE,
-      nav_panel("1. Analysis Tools", value = "tab_ui"),
-      nav_panel("2. Object Debug", value = "tab_debug")
+      nav_panel("1.Tools", value = "tab_ui"),
+      nav_panel("1.1. Tools Debug", value = "tab_debug")
     )
   ),
   conditionalPanel(condition = "input.menu_tools == 'tab_ui'", module_tool_selector_ui("tool_module_01")),

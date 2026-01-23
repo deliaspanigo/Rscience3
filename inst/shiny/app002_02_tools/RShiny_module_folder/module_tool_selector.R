@@ -17,6 +17,8 @@ module_tool_selector_ui <- function(id) {
   )
 }
 
+
+
 module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml") {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -165,12 +167,12 @@ module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml"
       }
 
       list(
-        is_done      = rv$is_done,
-        cat          = input$sel_category,
-        tool         = input$sel_tool_id,
-        script_key   = input$sel_script,
-        folder       = folder_path,
-        special_path = module_path
+        is_done       = rv$is_done,
+        cat           = input$sel_category,
+        tool          = input$sel_tool_id,
+        script_key    = input$sel_script,
+        folder_script = folder_path,
+        special_path  = module_path
       )
     }))
   })

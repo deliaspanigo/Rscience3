@@ -16,8 +16,8 @@ ui <- page_sidebar(
   sidebar = sidebar(
     navset_pill_list(
       id = "menu_fixed", well = FALSE,
-      nav_panel("1. Import Data", value = "tab_import"),
-      nav_panel("2. Object Debug", value = "tab_verbatim")
+      nav_panel("1. Dataset", value = "tab_import"),
+      nav_panel("1.1. Debug Dataset", value = "tab_verbatim")
     )
   ),
 
