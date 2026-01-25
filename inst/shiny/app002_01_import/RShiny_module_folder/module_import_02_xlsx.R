@@ -2,36 +2,43 @@ module_import_02_xlsx_ui <- function(id) {
   ns <- NS(id)
 
   tagList(
+    # Estilo CSS inyectado para que el botón de 'Browse' no rompa la estética
+    tags$style(HTML(paste0("
+      #", ns("file_upload"), "_progress { margin-bottom: 0px; }
+      .shiny-input-container:not(.shiny-input-has-error) .progress { background-color: #f5f5f5; }
+    "))),
+
     div(
+      # Alineación al inicio (arriba) y gap consistente
       style = "display: flex; gap: 20px; align-items: flex-start; justify-content: flex-start; overflow: visible;",
 
-      # Selector de Archivo
+      # 1. Bloque de Archivo
       div(
-        style = "width: auto; min-width: 300px;",
+        style = "width: 350px;", # Ancho fijo para evitar saltos visuales
         fileInput(
           inputId = ns("file_upload"),
           label = "Choose Excel File:",
           accept = c(".xlsx", ".xls"),
-          width = "100%"
+          width = "100%",
+          buttonLabel = "Browse...",
+          placeholder = "No file selected"
         )
       ),
 
-      # Contenedor para el Selector de Hojas (renderizado desde el server)
+      # 2. Bloque de Hojas (Dinámico)
       div(
-        style = "width: auto; overflow: visible;",
+        style = "width: auto; min-width: 250px; overflow: visible;",
         uiOutput(ns("sheet_selector_ui"))
       )
     ),
 
-    # Vista previa local (opcional, controlada por show_my_table en el server)
+    # 3. Vista previa local con spinner pequeño
     div(
-      style = "margin-top: 10px;",
-      tableOutput(ns("preview"))
+      style = "margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;",
+      withSpinner(tableOutput(ns("preview")), type = 8, size = 0.5)
     )
   )
 }
-
-
 
 module_import_02_xlsx_server <- function(id, show_my_table = T) {
   moduleServer(id, function(input, output, session) {
@@ -53,34 +60,32 @@ module_import_02_xlsx_server <- function(id, show_my_table = T) {
         label = "Select Sheet:",
         choices = vector_choices,
         selected = NULL,
-        width = "fit-content",
+        # width = "fit-content",
         options = list(dropdownParent = "body")
       )
     })
 
     # 3. Objeto de Salida Reactivo (OR) con validación defensiva
     OR_import_dataset_02_xlsx <- reactive({
-      # Requerimientos básicos
-      req(input$file_upload, input$sheet_sel)
-      req(input$sheet_sel != "")
+      # Default "Not Ready" state
+      default_out <- list(is_done = FALSE, my_dataset = NULL, name = NULL)
 
-      # --- EL ESCUDO ---
-      # Verificamos si la hoja seleccionada existe en el archivo actual
-      # Si no existe (porque es de un archivo anterior), detenemos la ejecución
-      current_sheets <- sheets_names()
-      if (!(input$sheet_sel %in% current_sheets)) {
-        return(NULL)
+      # Check requirements
+      if (is.null(input$file_upload) || is.null(input$sheet_sel) || input$sheet_sel == "") {
+        return(default_out)
       }
 
-      # Si pasó la validación, leemos
+      # Defensive check for sheet existence
+      if (!(input$sheet_sel %in% sheets_names())) return(default_out)
+
+      # If everything is fine, read and return "is_done = TRUE"
       df <- readxl::read_excel(input$file_upload$datapath, sheet = input$sheet_sel)
 
       list(
-        "my_dataset"   = df,
-        "name"         = input$file_upload$name,
-        "sheet"        = input$sheet_sel,
-        "timestamp"    = Sys.time(),
-        "is_data_frame" = is.data.frame(df)
+        is_done = TRUE,
+        my_dataset = df,
+        name = input$file_upload$name,
+        sheet = input$sheet_sel
       )
     })
 

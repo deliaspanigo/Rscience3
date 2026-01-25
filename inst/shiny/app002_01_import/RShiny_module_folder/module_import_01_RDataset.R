@@ -1,50 +1,63 @@
 module_import_01_RDataset_ui <- function(id) {
-
-  vector_choices <- c("iris", "mtcars")
-  vector_choices <- c("Select one..." = "", vector_choices)
   ns <- NS(id)
+
+  # We define choices here, ensuring the empty string is the first option
+  vector_choices <- c("Select one..." = "", "iris", "mtcars", "quakes", "airquality")
+
   tagList(
-    # card(
-      # card_header("Configuración de Importación"),
     selectizeInput(
       inputId = ns("dataset_sel"),
       label = "Select an R dataset:",
       choices = vector_choices,
-      selected = vector_choices[1],
+      selected = NULL, # Start empty to force a user choice
       width = "fit-content",
-      # Ahora 'options' sí funcionará correctamente
       options = list(dropdownParent = "body")
     ),
-       # hr(),
-      tableOutput(ns("preview"))
-    )
-  # )
+    # Optional local preview
+    tableOutput(ns("preview"))
+  )
 }
 
-module_import_01_RDataset_server <- function(id, show_my_table = T) {
+module_import_01_RDataset_server <- function(id, show_my_table = TRUE) {
   moduleServer(id, function(input, output, session) {
 
-    # Objeto de salida reactivo (OR)
+    # Standardized Reactive Output (OR)
     OR_import_dataset_01_RData <- reactive({
-      req(input$dataset_sel)
 
-      # Aquí es donde ocurre la magia de la importación
-      output_list <- list(
-        "my_dataset" = get(input$dataset_sel, "package:datasets"),
-        "name"       = input$dataset_sel,
-        "timestamp"  = Sys.time()
+      # 1. Default "Not Done" state
+      default_out <- list(
+        is_done = FALSE,
+        my_dataset = NULL,
+        name = NULL,
+        timestamp = Sys.time()
       )
-      output_list$is_data_frame <- is.data.frame(output_list$"my_dataset")
-      output_list
+
+      # 2. Validation: If nothing is selected, return the default
+      if (is.null(input$dataset_sel) || input$dataset_sel == "") {
+        return(default_out)
+      }
+
+      # 3. Successful Import Logic
+      # We use get() to fetch the dataset from the base package
+      raw_data <- get(input$dataset_sel, "package:datasets")
+
+      list(
+        is_done = TRUE, # THE CRITICAL FLAG
+        my_dataset = raw_data,
+        name = input$dataset_sel,
+        timestamp = Sys.time(),
+        is_data_frame = is.data.frame(raw_data)
+      )
     })
 
-    # Vista previa local al módulo
+    # Local preview logic
     output$preview <- renderTable({
-      req(show_my_table)
-      head(OR_import_dataset_01_RData()$my_dataset, 5)
+      res <- OR_import_dataset_01_RData()
+      req(show_my_table, res$is_done)
+      head(res$my_dataset, 5)
     })
 
-    # DEVOLVEMOS el reactivo para que el Orchestrator lo reciba
+    # Return the standardized reactive
     return(OR_import_dataset_01_RData)
   })
 }
