@@ -3,7 +3,7 @@ module_import_02_xlsx_ui <- function(id) {
 
   tagList(
     div(
-      style = "display: flex; gap: 20px; align-items: flex-end; justify-content: flex-start; overflow: visible;",
+      style = "display: flex; gap: 20px; align-items: flex-start; justify-content: flex-start; overflow: visible;",
 
       # Selector de Archivo
       div(

@@ -76,20 +76,22 @@ module_orchestrator_01_import_dataset_server <- function(id) {
         card_body(
           style = "overflow: visible;",
 
-          # PANEL DE EDICIÓN (Solo se oculta, no se destruye)
+          # PANEL DE EDICIÓN
           conditionalPanel(
             condition = sprintf("output['%s'] == 'edit'", ns("current_ui_state")),
             tagList(
               div(
-                style = "display: flex; gap: 20px; align-items: flex-end; overflow: visible;",
+                # CAMBIO AQUÍ: 'align-items: flex-start' para pegar todo arriba
+                style = "display: flex; gap: 20px; align-items: flex-start; justify-content: flex-start; overflow: visible;",
+
                 div(style = "width: auto; min-width: 200px;",
                     selectizeInput(ns("selected_data_source"), "Choose Method:",
                                    choices = c("Select..." = "", names(resources)),
                                    selected = input$selected_data_source,
                                    options = list(dropdownParent = "body"))
                 ),
+
                 div(style = "width: auto; overflow: visible;",
-                    # Renderizamos ambos módulos, pero solo mostramos el activo
                     conditionalPanel(
                       condition = sprintf("input['%s'] == 'data_source_R'", ns("selected_data_source")),
                       module_import_01_RDataset_ui(ns("mod_data_source_R"))
@@ -103,7 +105,7 @@ module_orchestrator_01_import_dataset_server <- function(id) {
             )
           ),
 
-          # PANEL DE BLOQUEO (Se muestra cuando rv$ui_state == 'locked')
+          # PANEL DE BLOQUEO
           conditionalPanel(
             condition = sprintf("output['%s'] == 'locked'", ns("current_ui_state")),
             uiOutput(ns("summary_locked_ui"))
