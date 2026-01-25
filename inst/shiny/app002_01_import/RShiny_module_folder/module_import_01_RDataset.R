@@ -1,4 +1,4 @@
-module_import_01_RData_ui <- function(id) {
+module_import_01_RDataset_ui <- function(id) {
 
   vector_choices <- c("iris", "mtcars")
   vector_choices <- c("Select one..." = "", vector_choices)
@@ -21,7 +21,7 @@ module_import_01_RData_ui <- function(id) {
   # )
 }
 
-module_import_01_RData_server <- function(id, show_my_table = T) {
+module_import_01_RDataset_server <- function(id, show_my_table = T) {
   moduleServer(id, function(input, output, session) {
 
     # Objeto de salida reactivo (OR)

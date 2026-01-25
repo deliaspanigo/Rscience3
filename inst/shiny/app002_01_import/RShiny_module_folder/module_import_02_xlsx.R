@@ -1,78 +1,63 @@
-library(readxl)
-
-module_import_02_xlsx_ui <- function(id) {
-  ns <- NS(id)
-  tagList(
-    div(
-      style = "display: flex; gap: 20px; align-items: flex-end; justify-content: flex-start;",
-      div(style = "width: auto; min-width: 300px;",
-          fileInput(ns("file_upload"), "Choose Excel File:", accept = c(".xlsx", ".xls"))
-      ),
-      div(style = "width: auto;",
-          uiOutput(ns("sheet_selector_ui"))
-      )
-    ),
-    # hr(),
-    # AGREGAR ESTO para que el módulo pueda mostrar la tabla
-    tableOutput(ns("preview"))
-  )
-}
-
 module_import_02_xlsx_server <- function(id, show_my_table = T) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
-    # 1. Get available sheets from the uploaded file
+    # 1. Nombres de hojas (Reactivo)
     sheets_names <- reactive({
       req(input$file_upload)
       readxl::excel_sheets(input$file_upload$datapath)
     })
 
-    # 2. Dynamic UI to select the sheet
+    # 2. Renderizado de la UI del selector
     output$sheet_selector_ui <- renderUI({
       req(sheets_names())
-
-      vector_choices <- sheets_names()
+      vector_choices <- c("Choose sheet..." = "", sheets_names())
 
       selectizeInput(
         inputId = ns("sheet_sel"),
         label = "Select Sheet:",
         choices = vector_choices,
-        selected = vector_choices[1],
+        selected = NULL,
         width = "fit-content",
-        # Ahora 'options' sí funcionará correctamente
         options = list(dropdownParent = "body")
       )
-
     })
 
-    # 3. Reactive Output Object (OR)
+    # 3. Objeto de Salida Reactivo (OR) con validación defensiva
     OR_import_dataset_02_xlsx <- reactive({
+      # Requerimientos básicos
       req(input$file_upload, input$sheet_sel)
+      req(input$sheet_sel != "")
 
-      # Read the data
+      # --- EL ESCUDO ---
+      # Verificamos si la hoja seleccionada existe en el archivo actual
+      # Si no existe (porque es de un archivo anterior), detenemos la ejecución
+      current_sheets <- sheets_names()
+      if (!(input$sheet_sel %in% current_sheets)) {
+        return(NULL)
+      }
+
+      # Si pasó la validación, leemos
       df <- readxl::read_excel(input$file_upload$datapath, sheet = input$sheet_sel)
 
-      # Maintain the same structure as the RData module
-      output_list <- list(
+      list(
         "my_dataset"   = df,
         "name"         = input$file_upload$name,
         "sheet"        = input$sheet_sel,
-        "timestamp"    = Sys.time()
+        "timestamp"    = Sys.time(),
+        "is_data_frame" = is.data.frame(df)
       )
-      output_list$is_data_frame <- is.data.frame(output_list$my_dataset)
-
-      output_list
     })
 
-    # 4. Local preview
+    # 4. Vista previa local
     output$preview <- renderTable({
-      req(OR_import_dataset_02_xlsx())
+      # Usamos req() para que no intente renderizar si el escudo devolvió NULL
+      res <- OR_import_dataset_02_xlsx()
+      req(res, res$my_dataset)
       req(show_my_table)
-      head(OR_import_dataset_02_xlsx()$my_dataset, 5)
+      head(res$my_dataset, 5)
     })
 
-    # RETURN the reactive for the Orchestrator
     return(OR_import_dataset_02_xlsx)
   })
 }

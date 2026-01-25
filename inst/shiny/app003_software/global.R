@@ -1,3 +1,8 @@
+# Libraries
+library(shiny)
+library(bslib)
+library(shinycssloaders)
+
 # 1. Definir la ruta de la carpeta
 source(file = "fn_local.R")
 path_modules_01_import <- "../app002_01_import/RShiny_module_folder"

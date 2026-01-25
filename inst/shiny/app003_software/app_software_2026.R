@@ -1,11 +1,10 @@
 
 
-
-library(shiny)
-library(bslib)
-library(shinycssloaders)
-
+# Source global
 source(file = "global.R")
+
+SHOW_DEBUG <- TRUE
+
 ui <- page_sidebar(
   theme = bs_theme(version = 5, bootswatch = "flatly"),
   title = "Rscience - Centralized Preview",
@@ -39,11 +38,11 @@ ui <- page_sidebar(
       id = "menu_fixed",
       well = FALSE,
       nav_panel("1. Dataset", value = "tab_import"),
-      nav_panel("1.1. Debug Dataset", value = "tab_import_DEBUG"),
+      if(SHOW_DEBUG) nav_panel("1.1. Debug Dataset", value = "tab_import_DEBUG"),
       nav_panel("2. Tools", value = "tab_tools"),
-      nav_panel("2.1. Tools Debug", value = "tab_tools_DEBUG"),
-      nav_panel("3.1. Temporal FF Debug", value = "tab_temporal_FF_DEBUG"),
-      nav_panel("4.1. Loading FF", value = "tab_loading_FF_DEBUG"),
+      if(SHOW_DEBUG) nav_panel("2.1. Tools Debug", value = "tab_tools_DEBUG"),
+      if(SHOW_DEBUG) nav_panel("3.1. Temporal FF Debug", value = "tab_temporal_FF_DEBUG"),
+      if(SHOW_DEBUG) nav_panel("4.1. Loading FF", value = "tab_loading_FF_DEBUG"),
 
       # Pestaña lógica: El CSS la hace invisible
       nav_panel("HIDDEN", value = "tab_execute_tool")
@@ -105,12 +104,12 @@ ui <- page_sidebar(
 
 server <- function(input, output, session) {
 
-  observe({
-    nav_hide("menu_fixed", target = "tab_import_DEBUG")
-    nav_hide("menu_fixed", target = "tab_tools_DEBUG")
-    nav_hide("menu_fixed", target = "tab_temporal_FF_DEBUG")
-    nav_hide("menu_fixed", target = "tab_loading_FF_DEBUG")
-  })
+  # observe({
+  #   nav_hide("menu_fixed", target = "tab_import_DEBUG")
+  #   nav_hide("menu_fixed", target = "tab_tools_DEBUG")
+  #   nav_hide("menu_fixed", target = "tab_temporal_FF_DEBUG")
+  #   nav_hide("menu_fixed", target = "tab_loading_FF_DEBUG")
+  # })
 
   # --- LOGICA DE SINCRONIZACIÓN DE MENÚS (Alternancia) ---
 
