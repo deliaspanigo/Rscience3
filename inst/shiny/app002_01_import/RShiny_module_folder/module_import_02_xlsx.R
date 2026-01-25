@@ -1,3 +1,38 @@
+module_import_02_xlsx_ui <- function(id) {
+  ns <- NS(id)
+
+  tagList(
+    div(
+      style = "display: flex; gap: 20px; align-items: flex-end; justify-content: flex-start; overflow: visible;",
+
+      # Selector de Archivo
+      div(
+        style = "width: auto; min-width: 300px;",
+        fileInput(
+          inputId = ns("file_upload"),
+          label = "Choose Excel File:",
+          accept = c(".xlsx", ".xls"),
+          width = "100%"
+        )
+      ),
+
+      # Contenedor para el Selector de Hojas (renderizado desde el server)
+      div(
+        style = "width: auto; overflow: visible;",
+        uiOutput(ns("sheet_selector_ui"))
+      )
+    ),
+
+    # Vista previa local (opcional, controlada por show_my_table en el server)
+    div(
+      style = "margin-top: 10px;",
+      tableOutput(ns("preview"))
+    )
+  )
+}
+
+
+
 module_import_02_xlsx_server <- function(id, show_my_table = T) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
