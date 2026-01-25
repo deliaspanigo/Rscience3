@@ -1,5 +1,3 @@
-
-
 # Source global
 source(file = "global.R")
 
@@ -9,22 +7,22 @@ ui <- page_sidebar(
   theme = bs_theme(version = 5, bootswatch = "flatly"),
   title = "Rscience - Centralized Preview",
 
-  # --- BLOQUE TÉCNICO: CSS PARA OCULTAR PESTAÑAS DE CONTROL ---
+  # --- TECHNICAL BLOCK: CSS TO HIDE CONTROL TABS ---
   tags$head(
     tags$style(HTML("
-      /* Oculta la pestaña puente del menú maestro */
+      /* Hide the bridge tab of the master menu */
       .nav-link[data-value='tab_execute_tool'],
       .nav-item:has(> .nav-link[data-value='tab_execute_tool']) {
         display: none !important;
       }
 
-      /* Oculta la pestaña de limpieza del menú dinámico (ANOVA, etc) */
+      /* Hide the clean tab of the dynamic menu (ANOVA, etc) */
       .nav-link[data-value='clean'],
       .nav-item:has(> .nav-link[data-value='clean']) {
         display: none !important;
       }
 
-      /* Ajuste estético para el hr entre menús */
+      /* Aesthetic adjustment for the hr between menus */
       hr {
         margin: 1rem 0;
         opacity: 0.15;
@@ -33,7 +31,7 @@ ui <- page_sidebar(
   ),
 
   sidebar = sidebar(
-    # MENU 1: Maestro (Orquestador)
+    # MENU 1: Master (Orchestrator)
     navset_pill_list(
       id = "menu_fixed",
       well = FALSE,
@@ -42,22 +40,22 @@ ui <- page_sidebar(
       nav_panel("2. Tools", value = "tab_tools"),
       if(SHOW_DEBUG) nav_panel("2.1. Tools Debug", value = "tab_tools_DEBUG"),
       if(SHOW_DEBUG) nav_panel("3.1. Temporal FF Debug", value = "tab_temporal_FF_DEBUG"),
-      if(SHOW_DEBUG) nav_panel("4.1. Loading FF", value = "tab_loading_FF_DEBUG"),
+      if(SHOW_DEBUG) nav_panel("4.1. Loading FF Debug", value = "tab_loading_FF_DEBUG"),
 
-      # Pestaña lógica: El CSS la hace invisible
+      # Logical tab: CSS makes it invisible
       nav_panel("HIDDEN", value = "tab_execute_tool")
     ),
 
     hr(),
 
-    # MENU 2: Dinámico (Cargado desde el módulo)
+    # MENU 2: Dynamic (Loaded from the module)
     uiOutput("render_tool_menu")
   ),
 
-  # --- ÁREA PRINCIPAL UNIFICADA (MAIN) ---
+  # --- UNIFIED MAIN AREA ---
 
-  # Grupo A: Paneles de Configuración y Debug del Maestro
-  # Solo visibles si el foco NO está en la herramienta ejecutándose
+  # Group A: Master Configuration and Debug Panels
+  # Only visible if the focus is NOT on the executing tool
   conditionalPanel(
     condition = "input.menu_fixed != 'tab_execute_tool'",
 
@@ -92,48 +90,38 @@ ui <- page_sidebar(
     )
   ),
 
-  # Grupo B: Panel de Ejecución de la Herramienta
-  # Solo visible cuando el Maestro salta a 'tab_execute_tool'
+  # Group B: Tool Execution Panel
+  # Only visible when the Master jumps to 'tab_execute_tool'
   conditionalPanel(
     condition = "input.menu_fixed == 'tab_execute_tool'",
     uiOutput("render_tool_body")
   )
 )
 
-
-
 server <- function(input, output, session) {
 
-  # observe({
-  #   nav_hide("menu_fixed", target = "tab_import_DEBUG")
-  #   nav_hide("menu_fixed", target = "tab_tools_DEBUG")
-  #   nav_hide("menu_fixed", target = "tab_temporal_FF_DEBUG")
-  #   nav_hide("menu_fixed", target = "tab_loading_FF_DEBUG")
-  # })
+  # --- MENU SYNC LOGIC (Alternation) ---
 
-  # --- LOGICA DE SINCRONIZACIÓN DE MENÚS (Alternancia) ---
-
-  # A. Si el usuario interactúa con el Menú Maestro
+  # A. If the user interacts with the Master Menu
   observeEvent(input$menu_fixed, {
-    # Si selecciona una pestaña de configuración/debug (pasos 1 al 4)
+    # If a configuration/debug tab is selected (steps 1 to 4)
     if(input$menu_fixed != "tab_execute_tool") {
-      # Usamos nav_select de bslib
       nav_select("active_tool-menu_lateral", selected = "clean")
     }
   }, ignoreInit = TRUE)
 
-  # B. Si el usuario interactúa con el Menú de la Herramienta Dinámica
+  # B. If the user interacts with the Dynamic Tool Menu
   observeEvent(input[["active_tool-menu_lateral"]], {
     req(input[["active_tool-menu_lateral"]])
-    # Si selecciona una pestaña real de la herramienta (pasos 5 en adelante)
+    # If a real tool tab is selected (steps 5 onwards)
     if(input[["active_tool-menu_lateral"]] != "clean") {
-      # Movemos el Menú Maestro a la pestaña invisible de ejecución
+      # Move the Master Menu to the invisible execution tab
       nav_select("menu_fixed", selected = "tab_execute_tool")
     }
   }, ignoreInit = TRUE)
 
 
-  # --- FASE 01: IMPORTACIÓN ---
+  # --- PHASE 01: IMPORTATION ---
   OR_01_import_dataset <- module_orchestrator_01_import_dataset_server("master_import")
 
   output$debug_verbatim_01_import_DEBUG <- renderPrint({
@@ -141,7 +129,7 @@ server <- function(input, output, session) {
   })
 
 
-  # --- FASE 02: SELECCIÓN DE HERRAMIENTA ---
+  # --- PHASE 02: TOOL SELECTION ---
   OR_02_tools <- module_tool_selector_server("master_tools", "tools_config_PROD.yml")
 
   output$debug_verbatim_02_tools_DEBUG <- renderPrint({
@@ -149,7 +137,7 @@ server <- function(input, output, session) {
   })
 
 
-  # --- CENTRALIZADOR DE ESTADO (Gatekeeper) ---
+  # --- STATE CENTRALIZER (Gatekeeper) ---
   OR_CENTRAL_is_done_import_and_tools <- reactive({
     is_done_import <- isTRUE(OR_01_import_dataset()$is_done)
     is_done_tools  <- isTRUE(OR_02_tools()$is_done)
@@ -157,7 +145,6 @@ server <- function(input, output, session) {
   })
 
 
-  # --- FASE 03: GESTIÓN TEMPORAL (Files & Folders) ---
   # --- PHASE 03: TEMPORAL FF (Encapsulated) ---
   OR_03_temporal_FF <- reactive({
     is_ready <- OR_CENTRAL_is_done_import_and_tools()
@@ -168,7 +155,6 @@ server <- function(input, output, session) {
     path_local_file <- file.path(base_path, tool_data$special_path)
 
     # 1. Create a dedicated Environment for this tool
-    # This prevents the tool's functions from polluting the Global Env
     tool_env <- new.env(parent = .GlobalEnv)
 
     # 2. Source the tool into that specific environment
@@ -191,13 +177,12 @@ server <- function(input, output, session) {
   })
 
 
-  # --- FASE 04: CARGA DE MÓDULOS (Dispatcher) ---
   # --- PHASE 04: MODULE EXTRACTION (Agnostic Dispatcher) ---
   OR_04_module_loading <- reactive({
     phase3 <- OR_03_temporal_FF()
     if (!isTRUE(phase3$is_done)) return(list(is_done = FALSE))
 
-    # We look for the functions INSIDE the tool's private environment
+    # Look for functions INSIDE the tool's private environment
     env <- phase3$tool_env
 
     required <- c("module_ui_menu", "module_ui_body", "module_server")
@@ -220,33 +205,32 @@ server <- function(input, output, session) {
   })
 
 
-  # --- FASE 05: RENDERIZADO DINÁMICO ---
+  # --- PHASE 05: DYNAMIC RENDERING ---
 
-  # 1. Render Menu Lateral (Herramienta)
+  # 1. Render Lateral Menu (Tool)
   output$render_tool_menu <- renderUI({
     res <- OR_04_module_loading()
     req(res$is_done)
     res$menu("active_tool")
   })
 
-  # 2. Render Body (Se activa vía conditionalPanel en la UI)
+  # 2. Render Body (Activated via conditionalPanel in UI)
   output$render_tool_body <- renderUI({
     res <- OR_04_module_loading()
     if(!res$is_done) {
-      return(card(card_header("Sistema no listo"), "Complete los pasos 1 y 2."))
+      return(card(card_header("System not ready"), "Complete steps 1 and 2."))
     }
     res$body("active_tool")
   })
 
-  # 3. Ejecución del Servidor del Módulo
+  # 3. Execution of Module Server
   observe({
     res <- OR_04_module_loading()
     req(res$is_done)
-    # Ejecutamos el server de la herramienta cargada
+    # Execute the loaded tool's server
     res$server("active_tool", OR_01_import_dataset = OR_01_import_dataset)
   })
 
 }
-
 
 shinyApp(ui, server)
