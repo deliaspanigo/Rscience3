@@ -158,40 +158,32 @@ server <- function(input, output, session) {
 
 
   # --- FASE 03: GESTIÓN TEMPORAL (Files & Folders) ---
+  # --- PHASE 03: TEMPORAL FF (Encapsulated) ---
   OR_03_temporal_FF <- reactive({
     is_ready <- OR_CENTRAL_is_done_import_and_tools()
-    if (!is_ready) return(list(is_done = FALSE, message = "Esperando Fase 1 y 2..."))
+    if (!is_ready) return(list(is_done = FALSE))
 
-    t_start     <- Sys.time()
-    time_folder <- format(t_start, "%Y_%m_%d_%H_%M_%S")
-    tool_data   <- OR_02_tools()
-    base_path   <- ".."
+    tool_data <- OR_02_tools()
+    base_path <- ".."
+    path_local_file <- file.path(base_path, tool_data$special_path)
 
-    safe_tool_id <- gsub("[^a-zA-Z0-9._-]", "_", tool_data$tool)
-    path_local_folder <- file.path(base_path, tool_data$folder)
-    path_local_file   <- file.path(base_path, tool_data$special_path)
+    # 1. Create a dedicated Environment for this tool
+    # This prevents the tool's functions from polluting the Global Env
+    tool_env <- new.env(parent = .GlobalEnv)
 
-    exists_local_dir  <- dir.exists(path_local_folder)
-    exists_local_file <- file.exists(path_local_file)
+    # 2. Source the tool into that specific environment
+    tryCatch({
+      source(path_local_file, local = tool_env)
 
-    temp_name      <- paste0("RscienceTemp_", safe_tool_id, "_", time_folder)
-    full_temp_path <- file.path(tempdir(), temp_name)
-    dest_file_path <- file.path(full_temp_path, basename(path_local_file))
-
-    if(exists_local_dir) {
-      dir.create(full_temp_path, showWarnings = FALSE, recursive = TRUE)
-      if(exists_local_file) {
-        file.copy(from = path_local_file, to = full_temp_path, overwrite = TRUE)
-        # IMPORTANTE: Cargamos el código de la herramienta
-        source(dest_file_path, local = FALSE)
-      }
-    }
-
-    list(
-      is_done = all(exists_local_dir, exists_local_file, dir.exists(full_temp_path), file.exists(dest_file_path)),
-      local_assets = list(folder_exists = exists_local_dir, file_exists = exists_local_file),
-      temporal_assets = list(folder_exists = dir.exists(full_temp_path), path = full_temp_path)
-    )
+      list(
+        is_done = TRUE,
+        tool_env = tool_env, # We pass the whole sandbox forward
+        timestamp = Sys.time()
+      )
+    }, error = function(e) {
+      showNotification(paste("Error loading tool logic:", e$message), type = "error")
+      list(is_done = FALSE)
+    })
   })
 
   output$debug_verbatim_03_temporal_FF_DEBUG <- renderPrint({
@@ -200,20 +192,26 @@ server <- function(input, output, session) {
 
 
   # --- FASE 04: CARGA DE MÓDULOS (Dispatcher) ---
+  # --- PHASE 04: MODULE EXTRACTION (Agnostic Dispatcher) ---
   OR_04_module_loading <- reactive({
     phase3 <- OR_03_temporal_FF()
     if (!isTRUE(phase3$is_done)) return(list(is_done = FALSE))
 
-    required <- c("module_ui_menu", "module_ui_body", "module_server")
-    check_exists <- sapply(required, exists, envir = .GlobalEnv)
+    # We look for the functions INSIDE the tool's private environment
+    env <- phase3$tool_env
 
-    if(!all(check_exists)) return(list(is_done = FALSE, error = "Módulos no hallados"))
+    required <- c("module_ui_menu", "module_ui_body", "module_server")
+    check_exists <- sapply(required, exists, envir = env)
+
+    if(!all(check_exists)) {
+      return(list(is_done = FALSE, error = "Functions not found in tool file"))
+    }
 
     list(
       is_done = TRUE,
-      menu    = get("module_ui_menu", envir = .GlobalEnv),
-      body    = get("module_ui_body", envir = .GlobalEnv),
-      server  = get("module_server",  envir = .GlobalEnv)
+      menu    = get("module_ui_menu", envir = env),
+      body    = get("module_ui_body", envir = env),
+      server  = get("module_server",  envir = env)
     )
   })
 
