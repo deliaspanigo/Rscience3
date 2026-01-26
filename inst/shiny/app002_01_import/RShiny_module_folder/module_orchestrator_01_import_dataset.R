@@ -9,41 +9,72 @@ module_orchestrator_01_import_dataset_ui <- function(id) {
         .preview-header-edit { background-color: #f8f9fa; color: #212529; transition: all 0.3s ease; }
       "))
     ),
+    uiOutput(ns("list_btn")),
+    br(),
     uiOutput(ns("col_01")),
     div(
       style = "min-height: 400px; margin-top: 20px;",
       withSpinner(uiOutput(ns("centralized_preview_ui")), type = 6, color = "#2c3e50")
     ),
     br(),
-    uiOutput(ns("list_btn"))
+
   )
 }
 
+
+
+
+
+module_orchestrator_01_import_dataset_ui04 <- function(id) {
+  ns <- NS(id)
+  tagList(
+    # Floating Toolbar Style
+    div(class = "p-3 mb-3 bg-white shadow-sm rounded-3 border",
+        div(class = "row align-items-center",
+            div(class = "col-md-8", uiOutput(ns("col_01"))),
+            div(class = "col-md-4 text-end", uiOutput(ns("list_btn")))
+        )
+    ),
+    # Large Preview Area
+    div(style = "height: calc(100vh - 250px); overflow-y: auto;",
+        withSpinner(uiOutput(ns("centralized_preview_ui")), type = 6)
+    )
+  )
+}
+
+
+#######################################################################
 module_orchestrator_01_import_dataset_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+    # --- PHASE 1: STATE ---
     rv <- reactiveValues(
       ui_state = "edit",
       instantiated_servers = list()
     )
 
+    # Bridge for conditionalPanel in UI
     output$current_ui_state <- renderText({ rv$ui_state })
     outputOptions(output, "current_ui_state", suspendWhenHidden = FALSE)
 
+    # Registry of sub-modules
     resources <- list(
       "data_source_R"    = list(ui = module_import_01_RDataset_ui, srv = module_import_01_RDataset_server),
       "data_source_xlsx" = list(ui = module_import_02_xlsx_ui,      srv = module_import_02_xlsx_server)
     )
 
+    # --- PHASE 2: DYNAMIC DISPATCHER ---
     observe({
       req(input$selected_data_source)
       src <- input$selected_data_source
       if (is.null(rv$instantiated_servers[[src]])) {
+        # Initialize sub-module server on demand
         rv$instantiated_servers[[src]] <- resources[[src]]$srv(paste0("mod_", src), show_my_table = FALSE)
       }
     })
 
+    # Reactive to get the data from the currently active sub-module
     current_active_data <- reactive({
       req(input$selected_data_source)
       src <- input$selected_data_source
@@ -52,11 +83,13 @@ module_orchestrator_01_import_dataset_server <- function(id) {
       server_res()
     })
 
+    # --- PHASE 3: ACTIONS (Lock, Edit, Reset) ---
     observeEvent(input$btn_lock, {
       if (is.null(input$selected_data_source) || input$selected_data_source == "") {
         showNotification("Error: Please select a Method first.", type = "error")
         return()
       }
+
       data_info <- current_active_data()
       if (isTRUE(data_info$is_done)) {
         rv$ui_state <- "locked"
@@ -73,11 +106,14 @@ module_orchestrator_01_import_dataset_server <- function(id) {
 
     observeEvent(input$btn_reset, { session$reload() })
 
+    # --- PHASE 4: UI RENDERING (Orchestrator Controls) ---
     output$col_01 <- renderUI({
       card(
         card_header("Import Control Center"),
         card_body(
           style = "overflow: visible;",
+
+          # EDITING MODE
           conditionalPanel(
             condition = sprintf("output['%s'] == 'edit'", ns("current_ui_state")),
             div(
@@ -100,6 +136,8 @@ module_orchestrator_01_import_dataset_server <- function(id) {
               )
             )
           ),
+
+          # LOCKED MODE (Summary)
           conditionalPanel(
             condition = sprintf("output['%s'] == 'locked'", ns("current_ui_state")),
             uiOutput(ns("summary_locked_ui"))
@@ -118,16 +156,16 @@ module_orchestrator_01_import_dataset_server <- function(id) {
       )
     })
 
-    # --- DYNAMIC PREVIEW: Changes color when Locked ---
+    # --- PHASE 5: CENTRALIZED PREVIEW (With Horizontal Scroll) ---
     output$centralized_preview_ui <- renderUI({
       info <- current_active_data()
       req(info$is_done, info$my_dataset)
 
       is_locked <- rv$ui_state == "locked"
 
-      # Determine CSS classes based on state
+      # Aesthetic classes from the UI tags$style
       header_class <- if(is_locked) "preview-header-locked" else "preview-header-edit"
-      card_class   <- if(is_locked) "preview-card-locked" else ""
+      card_class   <- if(is_locked) "preview-card-locked" else "shadow-sm"
 
       card(
         class = card_class,
@@ -138,10 +176,13 @@ module_orchestrator_01_import_dataset_server <- function(id) {
               if(is_locked)
                 span(class="badge bg-white text-success", "CONFIRMED")
               else
-                span(class="badge bg-warning text-dark", "DRAFT")
+                span(class="badge bg-warning text-dark", "DRAFT PREVIEW")
           )
         ),
-        tableOutput(ns("main_table_output"))
+        # WRAPPER FOR HORIZONTAL SCROLL
+        div(style = "overflow-x: auto; width: 100%; background-color: white;",
+            tableOutput(ns("main_table_output"))
+        )
       )
     })
 
@@ -149,18 +190,27 @@ module_orchestrator_01_import_dataset_server <- function(id) {
       info <- current_active_data()
       req(info$is_done, info$my_dataset)
       head(info$my_dataset, 5)
-    })
+    },
+    # text-nowrap is key: it forces the scroll by preventing text wrapping
+    class = "table table-hover table-striped table-sm text-nowrap mb-0",
+    width = "100%",
+    align = "l")
 
+    # --- PHASE 6: BUTTON TOOLBAR ---
     output$list_btn <- renderUI({
       is_locked <- rv$ui_state == "locked"
       layout_column_wrap(
         width = 1/3, fill = FALSE,
-        actionButton(ns("btn_lock"), "Lock", icon = icon("check"), class = paste("btn-success", if(is_locked) "disabled")),
-        actionButton(ns("btn_edit"), "Edit", icon = icon("pen"), class = paste("btn-warning", if(!is_locked) "disabled")),
-        actionButton(ns("btn_reset"), "Reset", icon = icon("rotate"), class = "btn-danger")
+        actionButton(ns("btn_lock"), "Lock", icon = icon("check"),
+                     class = paste("btn-success", if(is_locked) "disabled")),
+        actionButton(ns("btn_edit"), "Edit", icon = icon("pen"),
+                     class = paste("btn-warning", if(!is_locked) "disabled")),
+        actionButton(ns("btn_reset"), "Reset", icon = icon("rotate"),
+                     class = "btn-danger")
       )
     })
 
+    # --- FINAL RETURN (Gatekeeper for the rest of the App) ---
     return(reactive({
       if (rv$ui_state == "locked") {
         return(current_active_data())
