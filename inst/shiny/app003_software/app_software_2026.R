@@ -47,7 +47,7 @@ ui <- page_sidebar(
       well = FALSE,
       nav_panel("1. Dataset", value = "tab_import"),
       if(SHOW_DEBUG) nav_panel("1.1. Debug Dataset", value = "tab_import_DEBUG"),
-      nav_panel("2. Tools", value = "tab_tools"),
+      nav_panel("2. Tools & Scripts", value = "tab_tools"),
       if(SHOW_DEBUG) nav_panel("2.1. Tools Debug", value = "tab_tools_DEBUG"),
       if(SHOW_DEBUG) nav_panel("3.1. Temporal FF Debug", value = "tab_temporal_FF_DEBUG"),
       if(SHOW_DEBUG) nav_panel("4.1. Loading FF Debug", value = "tab_loading_FF_DEBUG"),

@@ -56,6 +56,8 @@ tools:
 
 cat_code:
   descriptive:
-    description: "Herramientas estadisticas asicoadias a...."
+    description_short: "Descriptive SHORT."
+    description_long:  "Descriptive LONG."
   general_linear_model:
-    description: "Estimaciones polinomicas, pruebas de hipotesis y errores normales y homogeneos."
+    description_short: " General linear model SHORT."
+    description_long:  "General linear model LONG."
