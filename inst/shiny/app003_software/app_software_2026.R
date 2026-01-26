@@ -11,34 +11,18 @@ if (path_global != "") {
   stop("CRITICAL ERROR: 'global.R' missing in 'app003_software' folder.", call. = FALSE)
 }
 
-SHOW_DEBUG <- TRUE
+SHOW_DEBUG <- FALSE
+addResourcePath("mis_estilos", system.file("shiny/app003_software/www", package = "Rscience3"))
 
 ui <- page_sidebar(
   theme = bs_theme(version = 5, bootswatch = "flatly"),
   title = "Rscience - Centralized Preview",
 
   # --- TECHNICAL BLOCK: CSS TO HIDE CONTROL TABS ---
-  tags$head(
-    tags$style(HTML("
-      /* Hide the bridge tab of the master menu */
-      .nav-link[data-value='tab_execute_tool'],
-      .nav-item:has(> .nav-link[data-value='tab_execute_tool']) {
-        display: none !important;
-      }
-
-      /* Hide the clean tab of the dynamic menu (ANOVA, etc) */
-      .nav-link[data-value='clean'],
-      .nav-item:has(> .nav-link[data-value='clean']) {
-        display: none !important;
-      }
-
-      /* Aesthetic adjustment for the hr between menus */
-      hr {
-        margin: 1rem 0;
-        opacity: 0.15;
-      }
-    "))
-  ),
+  # Vincular el archivo externo
+  header = tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "mis_estilos/custom_styles.css")
+    ),
 
   sidebar = sidebar(
     # MENU 1: Master (Orchestrator)
