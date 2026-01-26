@@ -101,25 +101,31 @@ module_orchestrator_01_import_dataset_server <- function(id) {
       method_choices <- setNames(names(resources), sapply(resources, `[[`, "label"))
 
       card(
-        card_header("Import Control Center"),
+        card_header("Import Dataset"),
         card_body(
           style = "overflow: visible;",
-          conditionalPanel(
-            condition = sprintf("output['%s'] == 'edit'", ns("current_ui_state")),
-            div(
-              style = "display: flex; gap: 20px; align-items: flex-start;",
-              div(style = "min-width: 200px;",
-                  selectizeInput(ns("selected_data_source"), "Choose Method:",
-                                 choices = c("Select..." = "", method_choices),
-                                 selected = input$selected_data_source,
-                                 options = list(dropdownParent = "body"))
-              ),
-              div(submodule_ui_panels) # The automatic panels
+          div(
+            id = ns("import_container"),  # <-- ID para referencia
+            style = "min-height: 130px;",  # <-- ALTURA FIJA
+            conditionalPanel(
+              condition = sprintf("output['%s'] == 'edit'", ns("current_ui_state")),
+              div(
+                style = "display: flex; gap: 20px; align-items: flex-start; height: 100%;",
+                div(style = "min-width: 130px;",
+                    selectizeInput(ns("selected_data_source"), "Choose a source:",
+                                   choices = c("Select..." = "", method_choices),
+                                   selected = input$selected_data_source,
+                                   options = list(dropdownParent = "body"))
+                ),
+                div(submodule_ui_panels, style = "height: 100%;")
+              )
+            ),
+            conditionalPanel(
+              condition = sprintf("output['%s'] == 'locked'", ns("current_ui_state")),
+              div(style = "margin: 0; padding: 0;",  # <-- Añade esto
+                  uiOutput(ns("summary_locked_ui"))
+              )
             )
-          ),
-          conditionalPanel(
-            condition = sprintf("output['%s'] == 'locked'", ns("current_ui_state")),
-            uiOutput(ns("summary_locked_ui"))
           )
         )
       )
@@ -128,10 +134,25 @@ module_orchestrator_01_import_dataset_server <- function(id) {
     output$summary_locked_ui <- renderUI({
       info <- current_active_data()
       req(info$dataset$is_done)
-      div(class = "p-3 bg-light border border-success rounded",
-          h5("Source Locked", class = "text-success"),
-          p(tags$b("File/Object: "), info$dataset$label_file_name),
-          p(tags$small("Dimensions: ", info$dataset$rows, " rows x ", info$dataset$cols, " cols"))
+
+      div(
+        # Aumentamos el font-size a 1.2em (aprox 20% más grande que el estándar)
+        style = "font-size: 1.15rem; line-height: 1.4; padding: 5px 0; color: #2c3e50;",
+
+        div(
+          tags$b("Data source: "),
+          span(style = "color: #1a1a1a;", info$orquestator_import$name_external)
+        ),
+        div(
+          tags$b("File/Object: "),
+          span(style = "color: #1a1a1a;", info$dataset$label_file_name)
+        ),
+        div(
+          style = "margin-top: 5px; border-top: 1px solid #eee; padding-top: 5px;",
+          tags$b("Dimensions: "),
+          span(class = "badge bg-secondary",
+               paste(info$dataset$rows, "rows ×", info$dataset$cols, "cols"))
+        )
       )
     })
 

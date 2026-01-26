@@ -1,5 +1,4 @@
 
-
 str_path_fn_local <- system.file("shiny/app002_01_import/fn_local.R", package = "Rscience3")
 source(file = str_path_fn_local)
 
@@ -10,7 +9,11 @@ module_import_01_RDataset_ui <- function(id) {
     selectizeInput(
       inputId = ns("dataset_sel"),
       label = "Select an R dataset:",
-      choices = c("Select one..." = "", "iris", "mtcars", "quakes"),
+      choices = c("Select one..." = "",
+                  "iris" = "iris",
+                  "mtcars" = "mtcars",
+                  "quakes" = "quakes"),
+
       width = "fit-content",
       options = list(dropdownParent = "body")
     )
