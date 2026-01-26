@@ -9,15 +9,15 @@ module_orchestrator_01_import_dataset_ui <- function(id) {
         .preview-header-edit { background-color: #f8f9fa; color: #212529; transition: all 0.3s ease; }
       "))
     ),
-    uiOutput(ns("list_btn")),
-    br(),
+
     uiOutput(ns("col_01")),
     div(
       style = "min-height: 400px; margin-top: 20px;",
       withSpinner(uiOutput(ns("centralized_preview_ui")), type = 6, color = "#2c3e50")
     ),
     br(),
-
+    uiOutput(ns("list_btn")),
+    br()
   )
 }
 
