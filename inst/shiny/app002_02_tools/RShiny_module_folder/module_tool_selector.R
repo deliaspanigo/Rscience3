@@ -50,81 +50,85 @@ module_tool_selector_ui <- function(id) {
   )
 }
 
+
 module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml") {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
     # --- 1. CONFIG & STATE ---
     config_data <- reactiveFileReader(1000, session, config_path, yaml::read_yaml)
-    tools_list  <- reactive({ config_data()$tools })
+
+    # IMPORTANTE: Usamos unname() para quitar las claves del YAML (Rs001, Rs002)
+    # y trabajar solo con el contenido del objeto.
+    tools_list  <- reactive({ unname(config_data()$tools) })
     cat_details <- reactive({ config_data()$cat_code })
+    rv          <- reactiveValues(ui_state = "edit", is_done = FALSE)
 
-    rv <- reactiveValues(
-      ui_state = "edit", # 'edit' o 'locked'
-      is_done = FALSE
-    )
-
-    # --- 2. INITIALIZATION & SEQUENTIAL LOCKING ---
-
-    # Al cargar el módulo, configuramos el estado inicial
+    # --- 2. INITIALIZATION (Conteo Inicial y Bloqueo) ---
     observe({
       t_list <- tools_list()
       req(length(t_list) > 0)
 
+      # Extraemos categorías únicas de forma limpia
       cats_code <- sapply(t_list, function(x) x$cat_code)
       cats_name <- sapply(t_list, function(x) x$category)
-      final_cats <- setNames(cats_code[!duplicated(cats_code)],
-                             cats_name[!duplicated(cats_code)])
+      unique_indices <- which(!duplicated(cats_code))
 
-      # Nivel 1: Siempre habilitado al inicio
+      final_choices <- sapply(unique_indices, function(i) {
+        code <- cats_code[i]
+        count <- sum(cats_code == code)
+        paste0(cats_name[i], " (", count, ")")
+      })
+      # Quitamos nombres previos para evitar el formato "punto"
+      final_cats <- setNames(unname(cats_code[unique_indices]), unname(final_choices))
+
       updateSelectizeInput(session, "sel_category",
+                           label = paste0("1. Category (", length(final_cats), ")"),
                            choices = c("", final_cats),
                            server = TRUE,
-                           options = list(placeholder = '1. Select Category...', dropdownParent = "body"))
+                           options = list(placeholder = 'Select Category...', dropdownParent = "body"))
 
-      # Niveles 2 y 3: Nacen bloqueados con texto explicativo
-      updateSelectizeInput(session, "sel_tool_id", choices = "", server = TRUE,
-                           options = list(placeholder = '(Locked - Complete step 1)', dropdownParent = "body"))
-      updateSelectizeInput(session, "sel_script", choices = "", server = TRUE,
-                           options = list(placeholder = '(Locked - Complete step 2)', dropdownParent = "body"))
-
+      # Reset de hijos
+      updateSelectizeInput(session, "sel_tool_id", label = "2. Tool", choices = "", server = TRUE,
+                           options = list(placeholder = '(Locked - Complete step 1)'))
+      updateSelectizeInput(session, "sel_script", label = "3. Script", choices = "", server = TRUE,
+                           options = list(placeholder = '(Locked - Complete step 2)'))
       shinyjs::disable("sel_tool_id")
       shinyjs::disable("sel_script")
     })
 
-    # --- 3. CASCADING LOGIC (Step-by-Step) ---
-
-    # Nivel 2: Se activa cuando el Nivel 1 tiene selección
+    # --- 3. CASCADING LOGIC ---
     observeEvent(input$sel_category, {
       if (input$sel_category == "") {
-        updateSelectizeInput(session, "sel_tool_id", choices = "", server = TRUE,
+        updateSelectizeInput(session, "sel_tool_id", label = "2. Tool", choices = "", server = TRUE,
                              options = list(placeholder = '(Locked - Complete step 1)'))
-        updateSelectizeInput(session, "sel_script", choices = "", server = TRUE,
-                             options = list(placeholder = '(Locked - Complete step 2)'))
         shinyjs::disable("sel_tool_id")
-        shinyjs::disable("sel_script")
         return()
       }
 
-      # Cargamos herramientas de la categoría elegida
       filtered <- Filter(function(x) x$cat_code == input$sel_category, tools_list())
-      choices  <- setNames(sapply(filtered, function(x) x$id), sapply(filtered, function(x) x$name))
+
+      # Limpiamos nombres aquí también con unname()
+      tool_labels <- sapply(filtered, function(x) {
+        n_scripts <- length(x$folder_scripts)
+        paste0(x$name, " (", n_scripts, ")")
+      })
+      tool_ids <- sapply(filtered, function(x) x$id)
+
+      tool_choices <- setNames(unname(tool_ids), unname(tool_labels))
 
       updateSelectizeInput(session, "sel_tool_id",
-                           choices = c("", choices), server = TRUE,
-                           options = list(placeholder = '2. Select Tool...', dropdownParent = "body"))
+                           label = paste0("2. Tool (", length(filtered), ")"),
+                           choices = c("", tool_choices), server = TRUE,
+                           options = list(placeholder = 'Select Tool...', dropdownParent = "body"))
 
       shinyjs::enable("sel_tool_id")
-      # El nivel 3 se mantiene bloqueado hasta que elijan el nivel 2
       shinyjs::disable("sel_script")
-      updateSelectizeInput(session, "sel_script", choices = "", server = TRUE,
-                           options = list(placeholder = '(Locked - Complete step 2)'))
     }, ignoreInit = TRUE)
 
-    # Nivel 3: Se activa cuando el Nivel 2 tiene selección
     observeEvent(input$sel_tool_id, {
       if (input$sel_tool_id == "") {
-        updateSelectizeInput(session, "sel_script", choices = "", server = TRUE,
+        updateSelectizeInput(session, "sel_script", label = "3. Script", choices = "", server = TRUE,
                              options = list(placeholder = '(Locked - Complete step 2)'))
         shinyjs::disable("sel_script")
         return()
@@ -132,17 +136,17 @@ module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml"
 
       matches <- Filter(function(x) x$id == input$sel_tool_id, tools_list())
       req(length(matches) > 0)
+      scripts <- names(matches[[1]]$folder_scripts)
 
-      # Cargamos scripts de la herramienta elegida
       updateSelectizeInput(session, "sel_script",
-                           choices = c("", names(matches[[1]]$folder_scripts)), server = TRUE,
-                           options = list(placeholder = '3. Select Script...', dropdownParent = "body"))
+                           label = paste0("3. Script (", length(scripts), ")"),
+                           choices = c("", unname(scripts)), server = TRUE,
+                           options = list(placeholder = 'Select Script...', dropdownParent = "body"))
 
       shinyjs::enable("sel_script")
     }, ignoreInit = TRUE)
 
-    # --- 4. ACTION BUTTONS & VISIBILITY ---
-
+    # --- 4. BUTTONS & UI STATE ---
     output$tool_control_btns <- renderUI({
       is_locked <- rv$ui_state == "locked"
       layout_column_wrap(
@@ -157,21 +161,13 @@ module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml"
 
     observeEvent(input$btn_lock_tool, {
       if(nzchar(input$sel_script %||% "")) {
-        rv$ui_state <- "locked"
-        rv$is_done <- TRUE
-        # Al confirmar, bloqueamos incluso el primer nivel
-        shinyjs::disable("sel_category")
-        shinyjs::disable("sel_tool_id")
-        shinyjs::disable("sel_script")
-      } else {
-        showNotification("Please finish all 3 steps.", type = "warning")
+        rv$ui_state <- "locked"; rv$is_done <- TRUE
+        shinyjs::disable("sel_category"); shinyjs::disable("sel_tool_id"); shinyjs::disable("sel_script")
       }
     })
 
     observeEvent(input$btn_edit_tool, {
-      rv$ui_state <- "edit"
-      rv$is_done <- FALSE
-      # Al volver a editar, habilitamos según lo que esté lleno
+      rv$ui_state <- "edit"; rv$is_done <- FALSE
       shinyjs::enable("sel_category")
       if (input$sel_category != "") shinyjs::enable("sel_tool_id")
       if (input$sel_tool_id != "")  shinyjs::enable("sel_script")
@@ -179,46 +175,47 @@ module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml"
 
     observeEvent(input$btn_reset_tool, { session$reload() })
 
-    # --- 5. SUMMARY & DETAILS ---
-
+    # --- 5. DISPLAYS (Summary & Details) ---
     output$ui_locked_summary <- renderUI({
       req(rv$ui_state == "locked", input$sel_tool_id)
-      tool_node <- Filter(function(x) x$id == input$sel_tool_id, tools_list())[[1]]
-
+      t_node <- Filter(function(x) x$id == input$sel_tool_id, tools_list())[[1]]
       card(
         class = "bg-light border-success shadow-sm",
-        card_header(span(icon("lock"), " Tool Locked", class="text-success")),
+        card_header(span(icon("lock"), " Tool Locked", class = "text-success")),
         layout_column_wrap(
           width = 1/3,
-          p(tags$b("Category: "), span(class="badge bg-primary", tool_node$category)),
-          p(tags$b("Tool: "),     span(class="badge bg-secondary", tool_node$name)),
-          p(tags$b("Script: "),   span(class="badge bg-info", input$sel_script))
+          p(tags$b("Category: "), span(class = "badge bg-primary", t_node$category)),
+          p(tags$b("Tool: "),     span(class = "badge bg-secondary", t_node$name)),
+          p(tags$b("Script: "),   span(class = "badge bg-info", input$sel_script))
         )
       )
     })
 
     output$details_display_ui <- renderUI({
       req(input$sel_category, input$sel_category != "")
-
-      # Info de Categoría
-      desc_cat <- cat_details()[[input$sel_category]]$description %||% "No info."
+      desc_cat <- cat_details()[[input$sel_category]]$description %||% "No context info available."
       ui_list <- list(card(card_header("Category Context"), p(desc_cat)))
 
       if (nzchar(input$sel_tool_id %||% "")) {
         matches <- Filter(function(x) x$id == input$sel_tool_id, tools_list())
         if(length(matches) > 0) {
           node <- matches[[1]]
-          ui_list[[2]] <- card(card_header("Tool Info", class="bg-primary text-white"),
-                               h4(node$name), p(node$description_long))
-
+          ui_list[[2]] <- card(
+            card_header("Tool Info", class="bg-primary text-white"),
+            h4(node$name), p(node$description_long)
+          )
           if (nzchar(input$sel_script %||% "")) {
             s_info <- node$folder_scripts[[input$sel_script]]
             is_locked <- rv$ui_state == "locked"
             ui_list[[3]] <- card(
               class = if(is_locked) "border-success shadow" else "",
-              card_header(if(is_locked) "READY" else "Script Details",
-                          class=if(is_locked) "bg-success text-white" else "bg-secondary text-white"),
-              p(tags$b("Module Path: "), tags$code(s_info$special_module_file_path)),
+              card_header(
+                if(is_locked) span(icon("check-circle"), " READY") else "Script Details",
+                class = if(is_locked) "bg-success text-white" else "bg-secondary text-white"
+              ),
+              p(tags$b("Folder: "), tags$code(s_info$folder_script)),
+              p(tags$b("Path: "), tags$code(s_info$special_module_file_path)),
+              hr(),
               p(if(is_locked) tags$i(s_info$description_long) else s_info$description_short)
             )
           }
@@ -227,21 +224,15 @@ module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml"
       tagList(ui_list)
     })
 
-    # --- 6. DATA RETURN ---
+    # --- 6. RETURN ---
     return(reactive({
       if (!rv$is_done) return(list(is_done = FALSE))
-
       node <- Filter(function(x) x$id == input$sel_tool_id, tools_list())[[1]]
       script_info <- node$folder_scripts[[input$sel_script]]
-
       list(
-        is_done       = TRUE,
-        category      = input$sel_category,
-        tool_id       = input$sel_tool_id,
-        tool_name     = node$name,
-        script_key    = input$sel_script,
-        folder_script = script_info$folder_script,
-        special_path  = script_info$special_module_file_path
+        is_done = TRUE, category = input$sel_category, tool_id = input$sel_tool_id,
+        tool_name = node$name, script_key = input$sel_script,
+        folder_script = script_info$folder_script, special_path = script_info$special_module_file_path
       )
     }))
   })
