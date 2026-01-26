@@ -1,5 +1,15 @@
-# Source global
-source(file = "global.R")
+# --- Inside app_software_2026.R ---
+
+# Define the global.R path relative to the installed package
+path_global <- system.file("shiny/app003_software/global.R", package = "Rscience3")
+
+if (path_global != "") {
+  message("--> Loading configuration from global.R...")
+  source(path_global)
+} else {
+  # Error handling if global.R is critical
+  stop("CRITICAL ERROR: 'global.R' missing in 'app003_software' folder.", call. = FALSE)
+}
 
 SHOW_DEBUG <- TRUE
 

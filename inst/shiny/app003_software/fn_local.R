@@ -1,37 +1,30 @@
+# Función auxiliar para copiar carpetas de manera segura
+copy_tool_folder <- function(original_file, target_folder) {
 
-source_rscience_modules <- function(paths, pattern = "^module_.*\\.R$") {
+  # Obtener directorio original
+  original_dir <- dirname(normalizePath(original_file))
 
-  # Asegurar que solo procesamos carpetas que existen para evitar errores
-  valid_paths <- paths[dir.exists(paths)]
+  # Listar todos los archivos y carpetas
+  all_files <- list.files(original_dir, full.names = TRUE, all.files = FALSE)
 
-  if (length(valid_paths) == 0) {
-    warning("Ninguna de las rutas especificadas existe.")
-    return(NULL)
+  # Crear directorio destino
+  if (!dir.exists(target_folder)) {
+    dir.create(target_folder, recursive = TRUE)
   }
 
-  # Listar todos los archivos en todas las carpetas válidas
-  all_files <- list.files(
-    path = valid_paths,
-    pattern = pattern,
-    full.names = TRUE,
-    recursive = FALSE
-  )
+  # Copiar cada archivo/carpeta
+  for (file_path in all_files) {
+    dest_path <- file.path(target_folder, basename(file_path))
 
-  if (length(all_files) > 0) {
-    # Aplicar source a cada archivo
-    # Usamos local = FALSE para asegurar que se carguen en el Global Environment
-    invisible(lapply(all_files, source, local = FALSE))
-
-    # Mensaje informativo agrupado por carpeta para el log
-    lapply(valid_paths, function(p) {
-      count <- sum(grepl(p, all_files))
-      message(sprintf("✓ [%d] módulos cargados desde: %s", count, p))
-    })
-
-  } else {
-    warning("No se encontraron archivos que coincidan con el patrón en las rutas dadas.")
+    if (dir.exists(file_path)) {
+      # Es una carpeta - copiar recursivamente
+      file.copy(file_path, dirname(dest_path), recursive = TRUE, overwrite = TRUE)
+    } else {
+      # Es un archivo
+      file.copy(file_path, dest_path, overwrite = TRUE)
+    }
   }
 
-  return(all_files)
+  return(target_folder)
 }
 
