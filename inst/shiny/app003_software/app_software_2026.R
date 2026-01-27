@@ -11,7 +11,7 @@ if (path_global != "") {
   stop("CRITICAL ERROR: 'global.R' missing in 'app003_software' folder.", call. = FALSE)
 }
 
-SHOW_DEBUG <- FALSE
+SHOW_DEBUG <- TRUE
 addResourcePath("mis_estilos", system.file("shiny/app003_software/www", package = "Rscience3"))
 
 ui <- page_sidebar(
@@ -33,6 +33,8 @@ ui <- page_sidebar(
       if(SHOW_DEBUG) nav_panel("1.1. Debug Dataset", value = "tab_import_DEBUG"),
       nav_panel("2. Tools & Scripts", value = "tab_tools"),
       if(SHOW_DEBUG) nav_panel("2.1. Tools Debug", value = "tab_tools_DEBUG"),
+      if(SHOW_DEBUG) nav_panel("3.1. Is Done All", value = "tab_is_done_all_DEBUG"),
+
       if(SHOW_DEBUG) nav_panel("3.1. Temporal FF Debug", value = "tab_temporal_FF_DEBUG"),
       if(SHOW_DEBUG) nav_panel("4.1. Loading FF Debug", value = "tab_loading_FF_DEBUG"),
 
@@ -60,7 +62,7 @@ ui <- page_sidebar(
 
     conditionalPanel(
       condition = "input.menu_fixed == 'tab_import_DEBUG'",
-      card(card_header("Import Debug"), verbatimTextOutput("debug_verbatim_01_import_DEBUG"))
+      card(card_header("step 01 - Import - Debug"), verbatimTextOutput("debug_verbatim_01_import_DEBUG"))
     ),
 
     conditionalPanel(
@@ -70,12 +72,17 @@ ui <- page_sidebar(
 
     conditionalPanel(
       condition = "input.menu_fixed == 'tab_tools_DEBUG'",
-      card(card_header("Tools Debug"), verbatimTextOutput("debug_verbatim_02_tools_DEBUG"))
+      card(card_header("step 02 - Tools - Debug"), verbatimTextOutput("debug_verbatim_02_tools_DEBUG"))
+    ),
+
+    conditionalPanel(
+      condition = "input.menu_fixed == 'tab_is_done_all_DEBUG'",
+      card(card_header("Step 03 - Is done all - Debug"), verbatimTextOutput("debug_verbatim_03_is_done_all_DEBUG"))
     ),
 
     conditionalPanel(
       condition = "input.menu_fixed == 'tab_temporal_FF_DEBUG'",
-      card(card_header("Temporal FF Debug"), verbatimTextOutput("debug_verbatim_03_temporal_FF_DEBUG"))
+      card(card_header("Step 04 - Temporal FF - Debug"), verbatimTextOutput("debug_verbatim_04_temporal_FF_DEBUG"))
     ),
 
     conditionalPanel(
@@ -94,8 +101,11 @@ ui <- page_sidebar(
 
 server <- function(input, output, session) {
 
-  # --- MENU SYNC LOGIC (Alternation) ---
+  # Basics
+  default_output_list <- list(is_done = FALSE)
 
+
+  # --- MENU SYNC LOGIC (Alternation) ---
   # A. If the user interacts with the Master Menu
   observeEvent(input$menu_fixed, {
     # If a configuration/debug tab is selected (steps 1 to 4)
@@ -131,49 +141,81 @@ server <- function(input, output, session) {
   })
 
 
-  # --- STATE CENTRALIZER (Gatekeeper) ---
-  OR_CENTRAL_is_done_import_and_tools <- reactive({
+  # --- PHASE 03: STATE CENTRALIZER (Gatekeeper) ---
+  OR_03_CENTRAL_is_done_import_and_tools <- reactive({
     is_done_import <- isTRUE(OR_01_import_dataset()$is_done)
     is_done_tools  <- isTRUE(OR_02_tools()$is_done)
-    all(is_done_import, is_done_tools)
+    is_done_all    <- all(is_done_import, is_done_tools)
+
+    list_output <- list(
+      "is_done_import" = is_done_import,
+      "is_done_tools" = is_done_tools,
+      "is_done_all" = is_done_all
+    )
+    list_output
   })
 
+  output$debug_verbatim_03_is_done_all_DEBUG <- renderPrint({
+    OR_03_CENTRAL_is_done_import_and_tools()
+  })
 
-  # --- PHASE 03: TEMPORAL FF (Encapsulated) ---
-  OR_03_temporal_FF <- reactive({
-    is_ready <- OR_CENTRAL_is_done_import_and_tools()
-    if (!is_ready) return(list(is_done = FALSE))
+  # --- PHASE 04: TEMPORAL FF (Files and Folders) ---
+  OR_04_temporal_FF <- reactive({
+    # 1. Capture reactive snapshots at the very beginning
+    # This "freezes" the values for this execution cycle
+    previous_state_pack <- OR_03_CENTRAL_is_done_import_and_tools()
+    selected_tool_data  <- OR_02_tools()
 
-    tool_data <- OR_02_tools()
-    base_path <- ".."
-    path_local_file <- file.path(base_path, tool_data$special_path)
+    # 2. Extract static values from the local objects
+    is_previous_step_ready <- previous_state_pack$is_done_all
+    # req(is_previous_step_ready)
+    print(is_previous_step_ready)
+    # 3. Guardrail: Exit early if dependencies are not met
+    if (!isTRUE(is_previous_step_ready)) {
+      return(default_output_list)
+    }
 
-    # 1. Create a dedicated Environment for this tool
-    tool_env <- new.env(parent = .GlobalEnv)
+    # 4. Preparation of file paths using local variables
+    # Using file.path is safer for cross-platform compatibility
+    base_directory <- ".."
+    tool_script_path <- file.path(base_directory, selected_tool_data$special_path)
 
-    # 2. Source the tool into that specific environment
+    # 5. Sandbox Creation: Initialize a clean environment
+    # Setting parent = .GlobalEnv ensures access to loaded libraries
+    tool_execution_env <- new.env(parent = .GlobalEnv)
+
+    # 6. Tool Loading Execution
     tryCatch({
-      source(path_local_file, local = tool_env)
+      # Source the external script into the isolated environment
+      source(tool_script_path, local = tool_execution_env)
 
+      # Return a success bundle
       list(
-        is_done = TRUE,
-        tool_env = tool_env, # We pass the whole sandbox forward
+        is_done   = TRUE,
+        tool_env  = tool_execution_env,
         timestamp = Sys.time()
       )
+
     }, error = function(e) {
-      showNotification(paste("Error loading tool logic:", e$message), type = "error")
-      list(is_done = FALSE)
+      # User-facing notification for debugging
+      showNotification(
+        ui = HTML(paste("Step 04 <br>Critical Error loading tool logic:", e$message)),
+        type = "error"
+      )
+
+      # Return a failure bundle
+      return(default_output_list)
     })
   })
 
-  output$debug_verbatim_03_temporal_FF_DEBUG <- renderPrint({
-    OR_03_temporal_FF()
+  output$debug_verbatim_04_temporal_FF_DEBUG <- renderPrint({
+    OR_04_temporal_FF()
   })
 
 
   # --- PHASE 04: MODULE EXTRACTION (Agnostic Dispatcher) ---
   OR_04_module_loading <- reactive({
-    phase3 <- OR_03_temporal_FF()
+    phase3 <- OR_04_temporal_FF()
     if (!isTRUE(phase3$is_done)) return(list(is_done = FALSE))
 
     # Look for functions INSIDE the tool's private environment
