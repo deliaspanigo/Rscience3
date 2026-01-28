@@ -3,15 +3,17 @@
 # 1. Libraries
 # In a package, it's better to list these in the DESCRIPTION file,
 # but keeping them here for the Shiny session is fine.
-library(shiny)
-library(bslib)
-library(shinycssloaders)
-library(Rscience3) # Load your own package to access internal functions
+
+library("bslib")
+library("lubridate")
+library("shiny")
+library("shinycssloaders")
+library("Rscience3") # Load your own package to access internal functions
 
 # 2. Locate module folders using system.file
 # This works regardless of where the package is installed on Windows
 path_modules_01_import <- system.file("shiny/app002_01_import/RShiny_module_folder", package = "Rscience3")
-path_modules_02_tools  <- system.file("shiny/app002_02_tools/RShiny_module_folder", package = "Rscience3")
+path_modules_02_tools  <- system.file("shiny/app002_02_tools/RShiny_module_folder",  package = "Rscience3")
 
 # 3. Security Check: Ensure paths exist
 if (path_modules_01_import == "" || path_modules_02_tools == "") {

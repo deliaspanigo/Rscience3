@@ -427,6 +427,7 @@ module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml"
       # 3. Construimos el objeto de salida
       list(
         is_done = TRUE,
+        description_short = "Selection for category, tool and script.",
         # Información de Categoría
         category = list(
           internal = input$sel_category, # ej: "descriptive_stats"

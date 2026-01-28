@@ -6,6 +6,7 @@
 fn3_IMPORT_new_import_struct <- function() {
   list(
     "is_done" = FALSE,
+    "description_short" = "Import dataset.",
     "orquestator_import" = list(
       "name_internal" = NA_character_,
       "name_external" = NA_character_,
