@@ -6,7 +6,7 @@ git commit -m "Tools..."
 
 # 2. Declare the annotated tag (using -a) to label the previous commit.
 # (Make sure to change 'v1.0.0' and the message).
-git tag -a 0.2.7 -m "Stable version 0.2.7 of the package."
+git tag -a 0.2.8 -m "Stable version 0.2.8 of the package."
 
 # 3. Push the commits from the current branch (e.g., 'main' or 'master') to the remote repository.
 git push

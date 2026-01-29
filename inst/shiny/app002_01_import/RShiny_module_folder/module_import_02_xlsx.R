@@ -42,7 +42,7 @@ module_import_02_xlsx_server <- function(id, show_my_table = TRUE) {
       }
 
       # Basics
-      df <-
+
 
 
       # Basics
@@ -69,7 +69,7 @@ module_import_02_xlsx_server <- function(id, show_my_table = TRUE) {
 
       is_done <- is.data.frame(my_dataset)
       end_time <- Sys.time()
-      time_seconds <- as.numeric(difftime(end_time, init_time, units = "secs"))
+      diff_secs <- as.numeric(difftime(end_time, init_time, units = "secs"))
 
       # Extra
       str_description_extra <- "File Upload from xlsx importer."
@@ -91,7 +91,7 @@ module_import_02_xlsx_server <- function(id, show_my_table = TRUE) {
       output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "file_path_internal", value = str_file_path_internal)
       output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "init_time", value = init_time)
       output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "end_time", value = end_time)
-      output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "time_secs", value = time_seconds)
+      output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "diff_secs", value = diff_secs)
 
       # 03. Extra
       output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "extra", field = "description", value = str_description_extra)

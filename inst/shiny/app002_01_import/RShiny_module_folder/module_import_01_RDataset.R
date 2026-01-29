@@ -46,7 +46,7 @@ module_import_01_RDataset_server <- function(id, show_my_table = TRUE) {
 
       is_done <- is.data.frame(my_dataset)
       end_time <- Sys.time()
-      time_seconds <- as.numeric(difftime(end_time, init_time, units = "secs"))
+      diff_secs <- as.numeric(difftime(end_time, init_time, units = "secs"))
       # 01. Importer
 
       # 02. Dataset
@@ -63,7 +63,7 @@ module_import_01_RDataset_server <- function(id, show_my_table = TRUE) {
       output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "file_path_internal", value = str_file_path_internal)
       output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "init_time", value = init_time)
       output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "end_time", value = end_time)
-      output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "time_secs", value = time_seconds)
+      output_list <- fn3_IMPORT_set_import_data(current_list = output_list, category = "dataset", field = "diff_secs", value = diff_secs)
 
 
       return(output_list)

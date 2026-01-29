@@ -7,6 +7,9 @@ fn3_IMPORT_new_import_struct <- function() {
   list(
     "is_done" = FALSE,
     "description_short" = "Import dataset.",
+    "init_time" = NA,
+    "end_time" = NA,
+    "diff_secs" = NA,
     "orquestator_import" = list(
       "name_internal" = NA_character_,
       "name_external" = NA_character_,
@@ -33,7 +36,7 @@ fn3_IMPORT_new_import_struct <- function() {
       "file_path_internal" = NA_character_,
       "init_time"          = as.POSIXct(NA),
       "end_time"           = as.POSIXct(NA),
-      "time_secs"          = NA_real_
+      "diff_secs"          = NA_real_
     ),
     "extra" = list(
       "description" = NA,

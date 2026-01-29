@@ -11,7 +11,7 @@ if (path_global != "") {
   stop("CRITICAL ERROR: 'global.R' missing in 'app003_software' folder.", call. = FALSE)
 }
 
-SHOW_DEBUG <- TRUE
+SHOW_DEBUG <- FALSE
 addResourcePath("mis_estilos", system.file("shiny/app003_software/www", package = "Rscience3"))
 
 ui <- page_sidebar(
@@ -63,7 +63,23 @@ ui <- page_sidebar(
 
     conditionalPanel(
       condition = "input.menu_fixed == 'tab_import_DEBUG'",
-      card(card_header("step 01 - Import - Debug"), verbatimTextOutput("debug_verbatim_01_import_DEBUG"))
+      bslib::navset_card_tab(
+        title = "Step 01 - Import Diagnostics",
+
+        # Pestaña 1: La Ficha Técnica Estética que diseñamos
+        bslib::nav_panel(
+          title = "Visual Summary",
+          shiny::icon("table"),
+          shiny::uiOutput("debug_status_01_dashboard")
+        ),
+
+        # Pestaña 2: El Verbatim Crudo (str) para inspección profunda
+        bslib::nav_panel(
+          title = "Raw Structure",
+          shiny::icon("code"),
+          shiny::verbatimTextOutput("debug_verbatim_01_import_DEBUG")
+        )
+      )
     ),
 
     conditionalPanel(
@@ -73,7 +89,23 @@ ui <- page_sidebar(
 
     conditionalPanel(
       condition = "input.menu_fixed == 'tab_tools_DEBUG'",
-      card(card_header("step 02 - Tools - Debug"), verbatimTextOutput("debug_verbatim_02_tools_DEBUG"))
+      bslib::navset_card_tab(
+        title = "Step 02 - Tools Diagnostics",
+
+        # Pestaña 1: La Ficha Técnica Estética del Paso 02
+        bslib::nav_panel(
+          title = "Visual Summary",
+          shiny::icon("wrench"),
+          shiny::uiOutput("debug_status_02_dashboard")
+        ),
+
+        # Pestaña 2: El Verbatim Crudo para inspección de toda la lista YML
+        bslib::nav_panel(
+          title = "Raw Structure",
+          shiny::icon("code"),
+          shiny::verbatimTextOutput("debug_verbatim_02_tools_DEBUG")
+        )
+      )
     ),
 
     conditionalPanel(
@@ -190,42 +222,284 @@ server <- function(input, output, session) {
   output$debug_verbatim_01_import_DEBUG <- renderPrint({
     str(OR_01_import_dataset())
   })
+  output$debug_status_01_dashboard <- renderUI({
+    data <- OR_01_import_dataset()
 
+    # 1. Validación de seguridad
+    if (is.null(data) || !is.list(data)) {
+      return(shiny::tags$p(shiny::tags$em("Waiting for data import...")))
+    }
+
+    # --- Lógica de Estado ---
+    overall_ok <- base::isTRUE(data$is_done)
+
+    # Función para cajas de métricas
+    metric_box <- function(label, value, icon_name) {
+      shiny::tags$div(
+        style = "flex: 1; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;",
+        shiny::tags$div(style = "color: #64748b; font-size: 0.7em; font-weight: bold; text-transform: uppercase;", label),
+        shiny::tags$div(style = "font-size: 1.1em; font-weight: bold; color: #1e293b; margin-top: 4px;",
+                        shiny::icon(icon_name, style = "color: #94a3b8; margin-right: 5px;"), value)
+      )
+    }
+
+    shiny::tagList(
+      # --- HEADER: STATUS ---
+      shiny::tags$div(
+        style = "background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center;",
+        shiny::tags$div(
+          style = base::paste0("font-size: 1.5em; margin-right: 15px; color: ", base::ifelse(overall_ok, "#10b981", "#ef4444"), ";"),
+          shiny::icon(base::ifelse(overall_ok, "check-circle", "exclamation-circle"))
+        ),
+        shiny::tags$div(
+          shiny::tags$h4(style = "margin: 0; color: #0f172a; font-weight: 800; font-size: 1.1em;",
+                         base::ifelse(overall_ok, "IMPORT SEQUENCE COMPLETE", "IMPORT SEQUENCE PENDING")),
+          shiny::tags$span(style = "color: #64748b; font-size: 0.85em;", data$description_short)
+        )
+      ),
+
+      # --- DATA SOURCE SELECTION (Uno abajo del otro) ---
+      shiny::tags$div(
+        style = "margin-bottom: 20px; padding: 15px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;",
+        shiny::tags$div(style = "color: #1e40af; font-size: 0.75em; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;",
+                        shiny::icon("database"), " Data Source Details"),
+
+        # Label Externo
+        shiny::tags$div(style = "margin-bottom: 8px;",
+                        shiny::tags$span(style = "color: #1e40af; font-size: 0.8em; font-weight: bold;", "External Name: "),
+                        shiny::tags$div(style = "font-size: 1.05em; color: #1e3a8a; font-weight: 600;", data$orquestator_import$name_external)
+        ),
+
+        # Label Interno
+        shiny::tags$div(
+          shiny::tags$span(style = "color: #1e40af; font-size: 0.8em; font-weight: bold;", "Internal ID: "),
+          shiny::tags$div(style = "font-family: monospace; font-size: 0.9em; color: #1e40af; background: #dbeafe; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-top: 2px;",
+                          data$orquestator_import$name_internal)
+        )
+      ),
+
+      # --- GRID DE MÉTRICAS ---
+      shiny::tags$div(
+        style = "display: flex; gap: 12px; margin-bottom: 20px;",
+        metric_box("Observations", data$dataset$rows, "list-ol"),
+        metric_box("Variables", data$dataset$cols, "columns"),
+        metric_box("Format", "Data Frame", "table")
+      ),
+
+      # --- TECHNICAL FILE (Inlcuye Label File Name) ---
+      shiny::tags$div(
+        style = "background: white; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;",
+        shiny::tags$div(style = "background: #f1f5f9; padding: 10px 15px; font-weight: bold; font-size: 0.8em; color: #475569; border-bottom: 1px solid #e2e8f0;",
+                        "OBJECT ARCHITECTURE"),
+        shiny::tags$div(
+          style = "padding: 15px; font-size: 0.85em; color: #334155;",
+
+          # File Name & Label
+          shiny::tags$div(style = "margin-bottom: 10px; display: flex; gap: 20px;",
+                          shiny::tags$div(
+                            shiny::tags$strong("File Name: "),
+                            shiny::tags$span(style = "color: #0284c7;", data$dataset$file_name)
+                          ),
+                          shiny::tags$div(
+                            shiny::tags$strong("Label Name: "),
+                            shiny::tags$span(style = "color: #0284c7;", data$dataset$label_file_name)
+                          )
+          ),
+
+          # Ruta
+          shiny::tags$div(style = "margin-bottom: 10px;",
+                          shiny::tags$strong("Internal Reference: "),
+                          shiny::tags$code(style = "font-size: 0.9em; background: #f8fafc; border: 1px solid #f1f5f9;", data$dataset$file_path_internal)),
+
+          # Info
+          shiny::tags$div(
+            style = "padding: 10px; background: #f8fafc; border-left: 3px solid #cbd5e1; font-style: italic; color: #64748b;",
+            data$orquestator_import$info
+          )
+        )
+      ),
+
+      # --- PERFORMANCE FOOTER (Tiempos uno abajo del otro) ---
+      shiny::tags$div(
+        style = "margin-top: 15px; padding: 12px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8em; color: #64748b;",
+
+        shiny::tags$div(style = "margin-bottom: 4px;",
+                        shiny::tags$strong("Start: "),
+                        if(!is.null(data$init_time)) base::format(data$init_time, "%H:%M:%OS3") else "--:--:--"
+        ),
+
+        shiny::tags$div(style = "margin-bottom: 4px;",
+                        shiny::tags$strong("End:   "),
+                        if(!is.null(data$end_time)) base::format(data$end_time, "%H:%M:%OS3") else "--:--:--"
+        ),
+
+        shiny::tags$div(style = "padding-top: 4px; border-top: 1px dashed #cbd5e1; color: #1e293b; font-weight: bold;",
+                        shiny::tags$strong("Time:  "),
+                        if(is.numeric(data$dataset$time_secs)) base::round(data$dataset$time_secs, 6) else "0.000000",
+                        " seconds"
+        )
+      )
+    )
+  })
 
   # --- PHASE 02: TOOL SELECTION ---  ------------------------------------------
   OR_02_tools <- module_tool_selector_server("master_tools", "tools_config_PROD.yml")
   output$debug_verbatim_02_tools_DEBUG <- renderPrint({
     OR_02_tools()
   })
+  output$debug_status_02_dashboard <- renderUI({
+    data <- OR_02_tools()
 
+    # 1. Validación de seguridad
+    if (is.null(data) || !is.list(data)) {
+      return(shiny::tags$p(shiny::tags$em("Waiting for tool selection...")))
+    }
+
+    # --- Lógica de Estado ---
+    overall_ok <- base::isTRUE(data$is_done)
+
+    # Función para cajas de métricas (Estética Neutra)
+    metric_box <- function(label, value, icon_name) {
+      shiny::tags$div(
+        style = "flex: 1; background: #ffffff; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;",
+        shiny::tags$div(style = "color: #64748b; font-size: 0.7em; font-weight: bold; text-transform: uppercase;", label),
+        shiny::tags$div(style = "font-size: 1.05em; font-weight: bold; color: #1e293b; margin-top: 4px;",
+                        shiny::icon(icon_name, style = "color: #94a3b8; margin-right: 5px;"), value)
+      )
+    }
+
+    shiny::tagList(
+      # --- HEADER: STATUS ---
+      shiny::tags$div(
+        style = "background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; align-items: center;",
+        shiny::tags$div(
+          style = base::paste0("font-size: 1.5em; margin-right: 15px; color: ", base::ifelse(overall_ok, "#10b981", "#ef4444"), ";"),
+          shiny::icon(base::ifelse(overall_ok, "check-circle", "exclamation-circle"))
+        ),
+        shiny::tags$div(
+          shiny::tags$h4(style = "margin: 0; color: #0f172a; font-weight: 800; font-size: 1.1em;",
+                         base::ifelse(overall_ok, "TOOL SELECTION ACTIVE", "TOOL SELECTION PENDING")),
+          shiny::tags$span(style = "color: #64748b; font-size: 0.85em;", data$description_short)
+        )
+      ),
+
+      # --- TOOL & CATEGORY DETAILS (Vertical) ---
+      shiny::tags$div(
+        style = "margin-bottom: 20px; padding: 15px; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;",
+        shiny::tags$div(style = "color: #1e40af; font-size: 0.75em; font-weight: bold; text-transform: uppercase; margin-bottom: 10px;",
+                        shiny::icon("wrench"), " Selected Configuration"),
+
+        # Categoría
+        shiny::tags$div(style = "margin-bottom: 10px;",
+                        shiny::tags$span(style = "color: #1e40af; font-size: 0.8em; font-weight: bold;", "Analysis Category: "),
+                        shiny::tags$div(style = "font-size: 1.05em; color: #1e3a8a; font-weight: 600;", data$category$external),
+                        shiny::tags$div(style = "font-family: monospace; font-size: 0.8em; color: #1e40af; opacity: 0.7;",
+                                        base::paste("Code:", data$category$internal))
+        ),
+
+        # Herramienta
+        shiny::tags$div(
+          shiny::tags$span(style = "color: #1e40af; font-size: 0.8em; font-weight: bold;", "Active Tool: "),
+          shiny::tags$div(style = "font-size: 1.05em; color: #1e3a8a; font-weight: 600;", data$tool$external),
+          shiny::tags$div(style = "font-family: monospace; font-size: 0.8em; color: #1e40af; opacity: 0.7;",
+                          base::paste("Code:", data$tool$internal))
+        )
+      ),
+
+      # --- GRID DE MÉTRICAS RÁPIDAS (Script, Subcategory, Group) ---
+      shiny::tags$div(
+        style = "display: flex; gap: 12px; margin-bottom: 20px;",
+        metric_box("Script", data$script$internal, "terminal"),
+        metric_box("Sub-Cat", data$yml_node$subcategory, "folder-tree"),
+        metric_box("Group", data$yml_node$statistic_group, "layer-group")
+      ),
+
+      # --- TECHNICAL FILE (Paths & YML) ---
+      shiny::tags$div(
+        style = "background: white; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;",
+        shiny::tags$div(style = "background: #f1f5f9; padding: 10px 15px; font-weight: bold; font-size: 0.8em; color: #475569; border-bottom: 1px solid #e2e8f0;",
+                        "MODULE ARCHITECTURE"),
+        shiny::tags$div(
+          style = "padding: 15px; font-size: 0.85em; color: #334155;",
+
+          # Paths
+          shiny::tags$div(style = "margin-bottom: 8px;",
+                          shiny::tags$strong("Folder Path: "),
+                          shiny::tags$span(style = "color: #0284c7; font-family: monospace;", data$paths$folder)),
+
+          shiny::tags$div(style = "margin-bottom: 10px;",
+                          shiny::tags$strong("Module File: "),
+                          shiny::tags$code(style = "font-size: 0.9em; background: #f8fafc; border: 1px solid #f1f5f9;", data$paths$module)),
+
+          # Info del YML
+          shiny::tags$div(
+            style = "padding: 10px; background: #f8fafc; border-left: 3px solid #cbd5e1; font-size: 0.9em; color: #64748b;",
+            shiny::tags$strong(style = "color: #475569;", "Description: "),
+            data$yml_node$description_short
+          )
+        )
+      ),
+
+      # --- PERFORMANCE FOOTER (Tiempos Verticales) ---
+      shiny::tags$div(
+        style = "margin-top: 15px; padding: 12px; border-radius: 8px; background: #f8fafc; border: 1px solid #e2e8f0; font-family: monospace; font-size: 0.8em; color: #64748b;",
+
+        shiny::tags$div(style = "margin-bottom: 4px;",
+                        shiny::tags$strong("Start: "),
+                        if(!is.null(data$init_time)) base::format(base::as.POSIXct(data$init_time), "%H:%M:%OS3") else "--:--:--"
+        ),
+
+        shiny::tags$div(style = "margin-bottom: 4px;",
+                        shiny::tags$strong("End:   "),
+                        if(!is.null(data$end_time)) base::format(base::as.POSIXct(data$end_time), "%H:%M:%OS3") else "--:--:--"
+        ),
+
+        shiny::tags$div(style = "padding-top: 4px; border-top: 1px dashed #cbd5e1; color: #1e293b; font-weight: bold;",
+                        shiny::tags$strong("Time:  "),
+                        if(is.numeric(data$diff_secs)) base::round(data$diff_secs, 6) else "0.000000",
+                        " seconds"
+        )
+      )
+    )
+  })
 
   # --- PHASE 03: STATE CENTRALIZER (Gatekeeper) --- ---------------------------
   OR_03_CENTRAL_is_done_import_and_tools <- reactive({
+
+    init_time <- lubridate::now()
+
     is_done_import <- isTRUE(OR_01_import_dataset()$is_done)
     is_done_tools  <- isTRUE(OR_02_tools()$is_done)
     is_done_all    <- all(is_done_import, is_done_tools)
 
+    end_time <- lubridate::now()
+    diff_time <- end_time - init_time
+    diff_secs <- base::as.numeric(diff_time, units = "secs")
+
     list_output <- list(
       "is_done" = is_done_all,
       "description_short" = "Central Point.",
+      "init_time" = init_time,
+      "end_time" = end_time,
+      "diff_secs" = diff_secs,
       previous_steps = list(
         "is_done_import" = is_done_import,
-        "is_done_tools" = is_done_tools)
+        "is_done_tools" = is_done_tools
       )
+    )
     return(list_output)
   })
   output$debug_verbatim_03_is_done_all_DEBUG <- renderPrint({
     OR_03_CENTRAL_is_done_import_and_tools()
   })
   output$debug_status_03_dashboard <- renderUI({
-    # 1. Validación de entrada (Guardrail)
+    # 1. Validación de entrada
     data <- OR_03_CENTRAL_is_done_import_and_tools()
     if (is.null(data) || !is.list(data)) {
       return(shiny::tags$p(shiny::tags$em("Waiting for reactive data...")))
     }
 
-    # 2. Funciones auxiliares para filas
-    # Usamos una estructura de fila con icono y texto para mayor claridad
+    # 2. Funciones auxiliares para filas (Status)
     status_row <- function(label, status) {
       is_ok <- base::isTRUE(status)
       icon_name <- base::ifelse(is_ok, "check-circle", "times-circle")
@@ -240,7 +514,7 @@ server <- function(input, output, session) {
       )
     }
 
-    # 3. Lógica del Banner Superior (Overall)
+    # 3. Lógica del Banner
     overall_ok   <- base::isTRUE(data$is_done)
     banner_bg    <- base::ifelse(overall_ok, "#d4edda", "#f8d7da")
     banner_color <- base::ifelse(overall_ok, "#155724", "#721c24")
@@ -264,10 +538,22 @@ server <- function(input, output, session) {
         status_row("TOOLS", data$previous_steps$is_done_tools)
       ),
 
+      # --- SECCIÓN DE TIEMPOS (PERFORMANCE) ---
+      shiny::tags$div(
+        style = "margin-top: 20px; padding: 12px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; font-family: monospace; font-size: 0.85em;",
+        shiny::tags$div(style = "color: #495057; font-weight: bold; margin-bottom: 5px; font-family: sans-serif;", "⏱ Execution Metadata:"),
+        shiny::tags$div(base::paste("Start:   ", base::format(data$init_time, "%H:%M:%OS3"))),
+        shiny::tags$div(base::paste("End:     ", base::format(data$end_time, "%H:%M:%OS3"))),
+        shiny::tags$div(
+          style = "margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ced4da; color: #0d6efd; font-weight: bold;",
+          base::paste("Duration:", base::round(data$diff_secs, 4), "seconds")
+        )
+      ),
+
       # NOTA INFORMATIVA
       shiny::tags$p(
-        style = "margin-top: 15px; font-size: 0.9em; color: #666;",
-        shiny::tags$em("Note: Both prerequisites must be TRUE for the Central Gate to open.")
+        style = "margin-top: 15px; font-size: 0.85em; color: #6c757d; font-style: italic;",
+        "Note: Both prerequisites must be TRUE for the Central Gate to open."
       )
     )
   })
@@ -275,6 +561,8 @@ server <- function(input, output, session) {
 
   # --- PHASE 04: TEMPORAL FF and ENV (Files and Folders) --- --------------------------
   OR_04_temporal_FF <- reactive({
+
+    init_time <- lubridate::now()
 
     # 1. Capture reactive snapshots
     internal_OR_02_tools   <- OR_02_tools()
@@ -450,9 +738,16 @@ server <- function(input, output, session) {
     # Final
     is_done <- TRUE
 
+    end_time <- lubridate::now()
+    diff_time <- end_time - init_time
+    diff_secs <- base::as.numeric(diff_time, units = "secs")
+
     list_output <- list(
       is_done = TRUE,
       description_short = "Temporal FF.",
+      init_time = init_time,
+      end_time = end_time,
+      diff_secs = diff_secs,
       tool_execution_env = tool_execution_env,
       local = list_output_step02_local,
       temp_basics = list_output_step03_temp_basics,
@@ -465,10 +760,12 @@ server <- function(input, output, session) {
     OR_04_temporal_FF()
   })
   output$debug_status_04_dashboard <- renderUI({
-    # --- 1. VALIDACIÓN DE ENTRADA ---
+    # --- 1. VALIDACIÓN DE ENTRADA (GUARDRAIL) ---
     data <- OR_04_temporal_FF()
-    if (is.null(data) || !is.list(data) || length(data) == 0) {
-      return(shiny::tags$p(shiny::tags$em("Waiting for Step 03 to complete...")))
+
+    # Si los datos no están listos o falta el cálculo de tiempo, mostramos espera
+    if (is.null(data) || is.null(data$diff_secs)) {
+      return(shiny::tags$p(shiny::tags$em("Waiting for Step 04 process to initialize...")))
     }
 
     # --- 2. FUNCIONES AUXILIARES ---
@@ -487,14 +784,13 @@ server <- function(input, output, session) {
     }
 
     # --- 3. CONSTRUCCIÓN DEL DASHBOARD ---
-    # Definimos el banner superior según el estado global
     overall_ok <- base::isTRUE(data$is_done)
     banner_bg    <- base::ifelse(overall_ok, "#d4edda", "#f8d7da")
     banner_color <- base::ifelse(overall_ok, "#155724", "#721c24")
     banner_text  <- base::ifelse(overall_ok, "✅ STEP 04: ALL FILES READY", "❌ STEP 04: SYNCHRONIZATION ERROR")
 
     shiny::tagList(
-      # --- BANNER DE ESTADO GLOBAL (AL INICIO) ---
+      # BANNER DE ESTADO GLOBAL
       shiny::tags$div(
         style = base::paste0("background-color: ", banner_bg, "; color: ", banner_color,
                              "; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid;"),
@@ -518,6 +814,27 @@ server <- function(input, output, session) {
         file_row("Temp Root", data$temp_basics$folder$str_path, data$temp_basics$folder$check_exists),
         file_row("Copied Folder", data$temp_copying_FF$temp_script_folder$str_path, data$temp_copying_FF$temp_script_folder$check_exists),
         file_row("Module File", data$temp_copying_FF$temp_module_file$str_path, data$temp_copying_FF$temp_module_file$check_exists)
+      ),
+
+      # --- SECCIÓN DE TIEMPOS (PERFORMANCE) ---
+      shiny::tags$div(
+        style = "margin-top: 20px; padding: 12px; background-color: #f1f3f5; border-radius: 8px; border: 1px solid #dee2e6; font-family: monospace; font-size: 0.85em;",
+        shiny::tags$div(style = "color: #495057; font-weight: bold; margin-bottom: 5px; font-family: sans-serif;", "⏱ Execution Metadata:"),
+
+        # Formateo seguro de timestamps
+        shiny::tags$div(base::paste("Start:   ", base::format(data$init_time, "%H:%M:%OS3"))),
+        shiny::tags$div(base::paste("End:     ", base::format(data$end_time, "%H:%M:%OS3"))),
+
+        shiny::tags$div(
+          style = "margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ced4da; color: #198754; font-weight: bold;",
+          # Aquí es donde fallaba: ahora solo se ejecuta si data$diff_secs existe
+          base::paste("Total Copy Duration:", base::round(as.numeric(data$diff_secs), 4), "seconds")
+        )
+      ),
+
+      shiny::tags$p(
+        style = "margin-top: 15px; font-size: 0.85em; color: #6c757d; font-style: italic;",
+        "Note: Files are mirrored to a temporary directory to allow local environment execution."
       )
     )
   })
@@ -525,6 +842,9 @@ server <- function(input, output, session) {
 
   # --- PHASE 05: MODULE EXTRACTION (Agnostic Dispatcher) ---
   OR_05_module_loading <- reactive({
+
+    init_time <- lubridate::now()
+
     internal_OR_04_temporal_FF <- OR_04_temporal_FF()
     if (!isTRUE(internal_OR_04_temporal_FF$is_done)) return(list(is_done = FALSE))
 
@@ -544,9 +864,17 @@ server <- function(input, output, session) {
     }
 
     is_done <- check_exists
+
+    end_time <- lubridate::now()
+    diff_time <- end_time - init_time
+    diff_secs <- base::as.numeric(diff_time, units = "secs")
+
     list(
       is_done = TRUE,
       description_short = "Loading selected module.",
+      init_time = init_time,
+      end_time = end_time,
+      diff_secs = diff_secs,
       all_fn_exists = check_exists,
       menu    = get("module_ui_menu", envir = tool_execution_env),
       body    = get("module_ui_body", envir = tool_execution_env),
@@ -557,37 +885,33 @@ server <- function(input, output, session) {
     OR_05_module_loading()
   })
   output$debug_status_05_dashboard <- renderUI({
-    # 1. Validación de entrada
+    # 1. Validación de entrada (Guardrail contra valores NULL o iniciales)
     data <- OR_05_module_loading()
-    if (is.null(data) || length(data) <= 1) {
-      return(shiny::tags$p(shiny::tags$em("Waiting for Step 04 to complete...")))
+
+    # Si no hay datos, o el proceso falló antes de calcular el tiempo, esperamos.
+    if (is.null(data) || is.null(data$diff_secs)) {
+      return(shiny::tags$p(shiny::tags$em("Waiting for Step 04 and Module Source...")))
     }
 
     # 2. Función para filas de objetos
     fn_row <- function(fn_name, exists) {
       is_ok <- base::isTRUE(exists)
-      # Usamos Check Verde o X Roja directa
       status_symbol <- base::ifelse(is_ok, "✅", "❌")
 
       shiny::tags$div(
         style = "display: flex; align-items: center; margin-bottom: 8px; padding: 10px; border-bottom: 1px solid #f0f0f0;",
-        # Símbolo de estado
         shiny::span(style = "margin-right: 15px; font-size: 1.2em;", status_symbol),
-
-        # Nombre del objeto (Color Azul Acero Profesional)
         shiny::tags$code(style = "width: 180px; font-weight: bold; color: #2c3e50; font-size: 1.1em; background: none;",
                          fn_name),
-
-        # Estado en texto (Gris neutro)
         shiny::tags$span(style = "color: #7f8c8d; font-style: italic;",
                          base::ifelse(is_ok, "Object found in Environment", "Object NOT found"))
       )
     }
 
-    # 3. Lógica del Banner (Colores de fondo suaves, texto neutro)
+    # 3. Lógica del Banner
     overall_ok   <- base::isTRUE(data$is_done)
-    banner_bg    <- base::ifelse(overall_ok, "#ebf5fb", "#fef9e7") # Azul muy claro o Amarillo muy claro
-    banner_color <- "#2c3e50" # Siempre el mismo color de texto oscuro para legibilidad
+    banner_bg    <- base::ifelse(overall_ok, "#ebf5fb", "#fef9e7")
+    banner_color <- "#2c3e50"
     banner_border <- base::ifelse(overall_ok, "#aed6f1", "#f9e79f")
 
     # 4. Construcción del UI
@@ -610,6 +934,18 @@ server <- function(input, output, session) {
         fn_row("module_server",  data$all_fn_exists["module_server"])
       ),
 
+      # --- SECCIÓN DE TIEMPOS (PERFORMANCE) ---
+      shiny::tags$div(
+        style = "margin-top: 20px; padding: 12px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef; font-family: monospace; font-size: 0.85em;",
+        shiny::tags$div(style = "color: #495057; font-weight: bold; margin-bottom: 5px; font-family: sans-serif;", "⏱ Source & Dispatch Performance:"),
+        shiny::tags$div(base::paste("Start Source: ", base::format(data$init_time, "%H:%M:%OS3"))),
+        shiny::tags$div(base::paste("End Dispatch:   ", base::format(data$end_time, "%H:%M:%OS3"))),
+        shiny::tags$div(
+          style = "margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ced4da; color: #6f42c1; font-weight: bold;",
+          base::paste("Total Loading Time:", base::round(as.numeric(data$diff_secs), 4), "seconds")
+        )
+      ),
+
       # MOSTRAR ERROR SI EXISTE
       if (!overall_ok && !base::is.null(data$error)) {
         shiny::tags$div(
@@ -624,135 +960,140 @@ server <- function(input, output, session) {
 
   OR_99_super_summary <- shiny::reactive({
 
-    list_is_done <- list()
-    internal_OR_01_import_dataset <- OR_01_import_dataset()
-    list_is_done[[1]] <- list(internal_OR_01_import_dataset$is_done,
-                              internal_OR_01_import_dataset$description_short)
+    # 1. Captura de snapshots reactivos
+    steps_data <- list(
+      OR_01_import_dataset(),
+      OR_02_tools(),
+      OR_03_CENTRAL_is_done_import_and_tools(),
+      OR_04_temporal_FF(),
+      OR_05_module_loading()
+    )
 
+    # 2. Creación del Data Frame detallado
+    df_summary <- purrr::map_dfr(base::seq_along(steps_data), function(i) {
+      item <- steps_data[[i]]
 
-    internal_OR_02_tools <- OR_02_tools()
-    list_is_done[[2]] <- list(internal_OR_02_tools$is_done,
-                              internal_OR_02_tools$description_short)
+      # Validación de estado y descripción
+      safe_status <- base::isTRUE(item$is_done)
+      safe_desc   <- base::ifelse(base::is.null(item$description_short), "Step pending", item$description_short)
 
-    internal_OR_03_CENTRAL_is_done_import_and_tools <- OR_03_CENTRAL_is_done_import_and_tools()
-    list_is_done[[3]] <- list(internal_OR_03_CENTRAL_is_done_import_and_tools$is_done,
-                              internal_OR_03_CENTRAL_is_done_import_and_tools$description_short)
-
-    internal_OR_04_temporal_FF <- OR_04_temporal_FF()
-    list_is_done[[4]] <- list(internal_OR_04_temporal_FF$is_done,
-                              internal_OR_04_temporal_FF$description_short)
-
-    internal_OR_05_module_loading <- OR_05_module_loading()
-    list_is_done[[5]] <- list(internal_OR_05_module_loading$is_done,
-                              internal_OR_05_module_loading$description_short)
-
-
-    df_summary <- purrr::map_dfr(base::seq_along(list_is_done), function(i) {
-      item <- list_is_done[[i]]
-
-      # FIX: Validamos que el contenido no sea NULL o vacío para evitar el error de "1, 0 rows"
-      safe_status <- base::ifelse(base::is.null(item[[1]]), FALSE, item[[1]])
-      safe_desc   <- base::ifelse(base::is.null(item[[2]]) || base::length(item[[2]]) == 0, "No desc", item[[2]])
+      # LÓGICA DE TIEMPO ROBUSTA:
+      # Si existe diff_secs lo usa; si no, lo calcula restando end - init
+      duration_val <- 0
+      if (!base::is.null(item$diff_secs)) {
+        duration_val <- item$diff_secs
+      } else if (!base::is.null(item$init_time) && !base::is.null(item$end_time)) {
+        duration_val <- base::as.numeric(item$end_time - item$init_time, units = "secs")
+      }
 
       base::data.frame(
         step_num    = i,
-        status_icon = base::ifelse(base::isTRUE(safe_status), "✅", "❌"),
+        status_bool = safe_status,
+        status_icon = base::ifelse(safe_status, "✅", "❌"),
         description = base::as.character(safe_desc),
+        duration    = base::as.numeric(duration_val),
         stringsAsFactors = FALSE
       )
     })
-    return(df_summary)
+
+    # 3. Cálculos Globales
+    is_system_ready <- base::all(df_summary$status_bool)
+
+    # Tiempos globales
+    global_init <- steps_data[[1]]$init_time
+    # Buscamos el último end_time disponible en la cadena
+    global_end  <- steps_data[[5]]$end_time
+
+    # Si el sistema no ha terminado, el end_time global es el del último paso completado
+    if (is.null(global_end)) {
+      completed_steps <- base::which(df_summary$status_bool)
+      if (length(completed_steps) > 0) {
+        global_end <- steps_data[[max(completed_steps)]]$end_time
+      }
+    }
+
+    total_performance_secs <- base::sum(df_summary$duration, na.rm = TRUE)
+
+    # 4. Retorno de Lista Maestra
+    list(
+      is_done        = is_system_ready,
+      df             = df_summary,
+      init_time      = global_init,
+      end_time       = global_end,
+      total_duration = total_performance_secs
+    )
   })
   output$debug_verbatim_99_super_summary <- renderPrint({
     OR_99_super_summary()
   })
   output$debug_status_99_dashboard <- renderUI({
-    # 1. Obtener los datos del reactivo
-    df_data <- OR_99_super_summary()
+    master_data <- OR_99_super_summary()
+    df_data     <- master_data$df
 
-    # Validación de seguridad: si no hay datos o falla el reactivo
     if (base::is.null(df_data) || base::nrow(df_data) == 0) {
-      return(shiny::tags$p(shiny::tags$em("Waiting for system initialization...")))
+      return(shiny::tags$p("Initializing Roadmap..."))
     }
 
-    # 2. Función interna para construir cada fila del Roadmap
-    summary_row <- function(num, icon, desc) {
-      is_ok <- (icon == "✅")
-      # Fondo ligeramente rojizo si el paso falló o está pendiente
-      bg_color <- base::ifelse(is_ok, "#ffffff", "#fffcfc")
+    # Barra de progreso
+    ready_steps  <- base::sum(df_data$status_bool)
+    progress_pct <- base::round((ready_steps / base::nrow(df_data)) * 100)
 
-      shiny::tags$div(
-        style = base::paste0("display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #edf2f7; background-color: ", bg_color, ";"),
-
-        # Círculo con el número de paso
-        shiny::tags$div(
-          style = "width: 28px; height: 28px; border-radius: 50%; background: #2c3e50; color: white;
-                 display: flex; align-items: center; justify-content: center; font-size: 0.75em; margin-right: 15px; flex-shrink: 0;",
-          num
-        ),
-
-        # Icono de estado (Emoji)
-        shiny::tags$span(style = "margin-right: 15px; font-size: 1.2em;", icon),
-
-        # Descripción del paso
-        shiny::tags$div(
-          style = "flex-grow: 1;",
-          shiny::tags$span(style = "color: #2c3e50; font-weight: 500; font-size: 0.95em;", desc)
-        ),
-
-        # Etiqueta de texto (Badge)
-        shiny::tags$span(
-          style = base::paste0("font-size: 0.7em; padding: 3px 10px; border-radius: 10px; font-weight: bold; ",
-                               base::ifelse(is_ok, "background: #e6fffa; color: #234e52; border: 1px solid #b2f5ea;",
-                                            "background: #fff5f5; color: #822727; border: 1px solid #feb2b2;")),
-          base::ifelse(is_ok, "READY", "WAITING")
-        )
-      )
-    }
-
-    # 3. Cálculo de progreso para la barra superior
-    total_steps <- base::nrow(df_data)
-    ready_steps <- base::sum(df_data$status_icon == "✅")
-    progress_pct <- base::round((ready_steps / total_steps) * 100)
-
-    # 4. Construcción final del UI
     shiny::tagList(
-      # --- BARRA DE PROGRESO ---
+      # --- HEADER DE PERFORMANCE GLOBAL ---
       shiny::tags$div(
-        style = "margin-bottom: 25px; background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #e9ecef;",
+        style = "display: flex; gap: 15px; margin-bottom: 20px;",
+
+        # Card 1: ESTADO
         shiny::tags$div(
-          style = "display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9em; font-weight: bold; color: #2c3e50;",
-          shiny::tags$span("System Activation Progress"),
-          shiny::tags$span(base::paste0(progress_pct, "%"))
+          style = base::paste0("flex: 1; padding: 15px; border-radius: 10px; text-align: center; border: 2px solid; ",
+                               base::ifelse(master_data$is_done,
+                                            "background: #e6fffa; color: #234e52; border-color: #b2f5ea;",
+                                            "background: #fff5f5; color: #822727; border-color: #feb2b2;")),
+          shiny::tags$div(style = "font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;", "System Status"),
+          shiny::tags$div(style = "font-size: 1.3em; font-weight: 900;",
+                          base::ifelse(master_data$is_done, "FULLY READY", "INITIALIZING"))
         ),
+
+        # Card 2: TIEMPO TOTAL
         shiny::tags$div(
-          style = "width: 100%; background-color: #e9ecef; border-radius: 10px; height: 10px; overflow: hidden;",
-          shiny::tags$div(
-            style = base::paste0("width: ", progress_pct, "%; background-color: #2c3e50; height: 100%; transition: width 0.5s ease-in-out;")
-          )
+          style = "flex: 1; padding: 15px; border-radius: 10px; text-align: center; background: #2c3e50; color: white; border: 2px solid #1a252f;",
+          shiny::tags$div(style = "font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8;", "Total Execution"),
+          shiny::tags$div(style = "font-size: 1.3em; font-weight: 900;",
+                          base::paste0(base::round(master_data$total_duration, 4), " s"))
         )
       ),
 
-      # --- ROADMAP CONTAINER ---
-      shiny::tags$h5(style = "color: #2c3e50; margin-bottom: 12px; font-weight: bold; padding-left: 5px;",
-                     "Execution Roadmap Details"),
-
+      # Barra de progreso
       shiny::tags$div(
-        style = "border: 1px solid #dcdde1; border-radius: 8px; overflow: hidden; background: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);",
-        # Aquí usamos seq_len para evitar el error de sintaxis del operador ':'
+        style = "width: 100%; background: #edf2f7; height: 8px; border-radius: 4px; margin-bottom: 25px; overflow: hidden; border: 1px solid #e2e8f0;",
+        shiny::tags$div(style = base::paste0("width: ", progress_pct, "%; background: #2c3e50; height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);"))
+      ),
+
+      # --- ROADMAP ---
+      shiny::tags$div(
+        style = "border: 1px solid #dcdde1; border-radius: 8px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.02);",
         base::lapply(base::seq_len(base::nrow(df_data)), function(i) {
-          summary_row(
-            num  = df_data$step_num[i],
-            icon = df_data$status_icon[i],
-            desc = df_data$description[i]
+          is_ok <- df_data$status_bool[i]
+          shiny::tags$div(
+            style = base::paste0("display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #edf2f7; ",
+                                 base::ifelse(is_ok, "", "background-color: #fffaf0;")),
+
+            shiny::tags$div(style = "width: 25px; font-weight: bold; color: #a0aec0;", base::paste0("0", i)),
+            shiny::span(style = "margin-right: 12px; font-size: 1.1em;", df_data$status_icon[i]),
+            shiny::tags$div(style = "flex-grow: 1; color: #2d3748; font-weight: 500;", df_data$description[i]),
+
+            # Tiempo individual
+            shiny::tags$span(style = "font-family: 'Courier New', monospace; font-size: 0.85em; background: #f7fafc; padding: 2px 6px; border-radius: 4px; border: 1px solid #e2e8f0; color: #4a5568;",
+                             base::paste0(base::round(df_data$duration[i], 4), "s"))
           )
         })
       ),
 
-      # --- FOOTER ---
-      shiny::tags$p(
-        style = "margin-top: 15px; font-size: 0.8em; color: #a0aec0; text-align: right; font-style: italic;",
-        base::paste("Last sync:", base::format(base::Sys.time(), "%H:%M:%S"))
+      # --- FOOTER METADATA ---
+      shiny::tags$div(
+        style = "margin-top: 20px; padding: 10px; border-top: 2px solid #f7fafc; display: flex; justify-content: space-between; font-size: 0.75em; color: #a0aec0; font-family: monospace;",
+        shiny::tags$span(base::paste("Launch:", base::format(master_data$init_time, "%H:%M:%OS3"))),
+        shiny::tags$span(base::paste("Checkpoint:", base::format(master_data$end_time, "%H:%M:%OS3")))
       )
     )
   })

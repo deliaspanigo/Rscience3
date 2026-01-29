@@ -411,6 +411,9 @@ module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml"
       # Solo devolvemos datos si el usuario confirmó la selección
       if (!rv$is_done) return(list(is_done = FALSE))
 
+      init_time <- lubridate::now()
+
+
       # 1. Obtenemos el nodo completo del YAML para la herramienta seleccionada
       node <- Filter(function(x) x$id == input$sel_tool_id, tools_list())[[1]]
       script_info <- node$folder_scripts[[input$sel_script]]
@@ -424,10 +427,19 @@ module_tool_selector_server <- function(id, config_path = "tools_config_DEV.yml"
       all_tools <- selector02_opts_tools()
       tool_label <- names(all_tools)[all_tools == input$sel_tool_id]
 
+      # Times
+
+      end_time <- lubridate::now()
+      diff_time <- end_time - init_time
+      diff_secs <- base::as.numeric(diff_time, units = "secs")
+
       # 3. Construimos el objeto de salida
       list(
         is_done = TRUE,
         description_short = "Selection for category, tool and script.",
+        init_time = init_time,
+        end_time = end_time,
+        diff_secs = diff_secs,
         # Información de Categoría
         category = list(
           internal = input$sel_category, # ej: "descriptive_stats"

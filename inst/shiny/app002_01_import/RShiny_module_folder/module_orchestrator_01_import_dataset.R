@@ -78,10 +78,11 @@ module_orchestrator_01_import_dataset_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
+
     # --- 1. REGISTRO DE RECURSOS ---
     resources <- list(
       "data_source_R"    = list(label = "R Data Objects", ui = module_import_01_RDataset_ui, srv = module_import_01_RDataset_server),
-      "data_source_xlsx" = list(label = "xlsx Files",    ui = module_import_02_xlsx_ui,      srv = module_import_02_xlsx_server)
+      "data_source_xlsx" = list(label = "xlsx Files",     ui = module_import_02_xlsx_ui,     srv = module_import_02_xlsx_server)
     )
 
     rv <- reactiveValues(
@@ -122,12 +123,21 @@ module_orchestrator_01_import_dataset_server <- function(id) {
 
       data_list <- server_res_reactive()
 
+      # Times
+      init_time <- data_list$"dataset"$"init_time"
+      end_time  <- data_list$"dataset"$"end_time"
+      diff_secs <- data_list$"dataset"$"diff_secs"
+
       internal_is_done <-  data_list$"dataset"$"is_done"
       external_is_done <-  TRUE
       stone_is_done <- isTRUE(internal_is_done) && isTRUE(external_is_done)
 
       # Inyección de metadatos
-      data_list <- fn3_IMPORT_set_import_data(data_list, category = NULL, field = "is_done", value = TRUE)
+      data_list <- fn3_IMPORT_set_import_data(data_list, category = NULL, field = "is_done",   value = stone_is_done)
+      data_list <- fn3_IMPORT_set_import_data(data_list, category = NULL, field = "init_time", value = init_time)
+      data_list <- fn3_IMPORT_set_import_data(data_list, category = NULL, field = "end_time",  value = end_time)
+      data_list <- fn3_IMPORT_set_import_data(data_list, category = NULL, field = "diff_secs", value = diff_secs)
+
       data_list <- fn3_IMPORT_set_import_data(data_list, "orquestator_import", "name_internal", src)
       data_list <- fn3_IMPORT_set_import_data(data_list, "orquestator_import", "name_external", resources[[src]]$label)
 
