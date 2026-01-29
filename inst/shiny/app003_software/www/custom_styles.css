@@ -1,52 +1,102 @@
-/* --- Estilo General del Sidebar --- */
-.sidebar-content {
-    background-color: #fcfcfc !important;
-}
+/* custom_styles.css - VERSIÓN MEJORADA */
 
-/* --- Formato de Botones tipo 'Card' para el Menú --- */
-#menu_fixed .nav-item,
-#active_tool-menu_lateral .nav-item {
-    margin-bottom: 10px;
-    width: 100%;
-}
-
-.nav-pills .nav-link {
-    border: 1px solid #e9ecef;
-    border-radius: 10px !important;
-    background-color: #ffffff;
-    color: #495057;
-    padding: 12px 15px;
-    transition: all 0.2s ease-in-out;
-    white-space: nowrap; /* Evita que el texto se rompa en 2 renglones */
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Efecto al pasar el mouse */
-.nav-pills .nav-link:hover {
-    background-color: #f1f4f6;
-    border-color: #cbd3da;
-    transform: translateX(3px); /* Pequeño desplazamiento a la derecha */
-}
-
-/* Pestaña Activa */
-.nav-pills .nav-link.active {
-    background-color: #2c3e50 !important;
-    border-color: #2c3e50;
-    color: #ffffff !important;
-    font-weight: 600;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-/* --- Ajuste para que el texto no se amontone --- */
-.nav-pill-list-container .col-sm-4 {
-    width: 100% !important; /* Fuerza al menú a usar todo el ancho disponible */
-}
-
-/* Ocultar pestañas técnicas (tus reglas originales) */
-.nav-link[data-value='tab_execute_tool'],
-.nav-link[data-value='clean'],
-.nav-item:has(> .nav-link[data-value='tab_execute_tool']),
-.nav-item:has(> .nav-link[data-value='clean']) {
+/* ================================================
+1. OCULTAR PESTAÑA ESPECÍFICA EN EL MENÚ
+================================================ */
+#menu_fixed .nav-link[data-value='tab_execute_tool'] {
     display: none !important;
 }
+
+/* ================================================
+2. ESTILOS PARA TABS DENTRO DE CARDS - VERSIÓN AGGRESSIVA
+================================================ */
+
+/* ESTRATEGIA: Atacar TODOS los posibles contenedores de tabs */
+
+/* Opción A: Selector por atributo data-card-bound */
+div[data-card-bound] .card-header .nav-tabs,
+div[class*="card"] .card-header .nav-tabs,
+.bslib-card .card-header .nav-tabs,
+.card .bslib-navs-card-nav .nav-tabs {
+    display: flex !important;
+    flex-direction: row !important;
+    width: 100% !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Opción B: Atacar directamente los nav-tabs que sean hijos directos de card-header */
+div.card-header > ul.nav.nav-tabs {
+    display: flex !important;
+    flex: 1 !important;
+}
+
+/* Opción C: Selector ultra-genérico para cualquier nav-tabs en cards */
+div:has(> .card-header) .nav-tabs,
+:where(.card, [class*="card"], .bslib-card) :where(.nav-tabs) {
+    display: flex !important;
+}
+
+/* ================================================
+3. ESTILOS ESPECÍFICOS PARA LOS ELEMENTOS DE TABS
+================================================ */
+
+/* Para los items de lista dentro de nav-tabs en cards */
+div[data-card-bound] .nav-tabs .nav-item,
+.card .nav-tabs .nav-item,
+.bslib-card .nav-tabs .nav-item {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    display: flex !important;
+}
+
+/* Para los links dentro de los tabs */
+div[data-card-bound] .nav-tabs .nav-link,
+.card .nav-tabs .nav-link,
+.bslib-card .nav-tabs .nav-link {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+    text-align: center !important;
+    padding: 20px 15px !important;
+    font-size: 1.2rem !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Pestaña activa */
+div[data-card-bound] .nav-tabs .nav-link.active,
+.card .nav-tabs .nav-link.active,
+.bslib-card .nav-tabs .nav-link.active {
+    background-color: #2c3e50 !important;
+    color: white !important;
+    border-color: #2c3e50 !important;
+}
+
+/* Pestaña inactiva */
+div[data-card-bound] .nav-tabs .nav-link:not(.active),
+.card .nav-tabs .nav-link:not(.active),
+.bslib-card .nav-tabs .nav-link:not(.active) {
+    background-color: #f8f9fa !important;
+    color: #495057 !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+/* ================================================
+4. DEBUG VISUAL - Para ver qué elementos estamos afectando
+================================================ */
+
+/* Descomenta estas líneas temporalmente para debug */
+/*
+.card .nav-tabs {
+    border: 3px solid red !important;
+}
+
+.card .nav-tabs .nav-item {
+    border: 2px dashed blue !important;
+}
+
+.card .nav-tabs .nav-link {
+    border: 1px solid green !important;
+}
+*/

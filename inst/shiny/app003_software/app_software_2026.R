@@ -12,17 +12,69 @@ if (path_global != "") {
 }
 
 SHOW_DEBUG <- FALSE
-addResourcePath("mis_estilos", system.file("shiny/app003_software/www", package = "Rscience3"))
+# --- GESTIÓN DE RECURSOS (CSS/WWW) ---
+# 1. Definimos la ruta relativa desde la raíz del paquete
+relative_www <- "inst/shiny/app003_software/www"
+
+# 2. Buscamos la ruta real: primero en desarrollo, luego en el paquete instalado
+path_www <- if (dir.exists(relative_www)) {
+  relative_www  # Modo Desarrollo
+} else {
+  system.file("shiny/app003_software/www", package = "Rscience3") # Modo Librería Instalada
+}
+
+# 3. Mapear el recurso si la carpeta existe
+if (path_www != "" && dir.exists(path_www)) {
+  addResourcePath("mis_estilos", path_www)
+  message("--> Success: CSS mapped from ", path_www)
+} else {
+  warning("--> Error: No se encontró la carpeta 'www' en ", path_www)
+}
+
+
+get_custom_css <- function() {
+
+  # 1. Ruta de desarrollo (cuando editas el paquete)
+  dev_path <- "inst/shiny/app003_software/www/custom_styles.css"
+
+  # 2. Ruta del paquete instalado
+  pkg_path <- system.file("shiny/app003_software/www/custom_styles.css", package = "Rscience3")
+
+  # Determinar qué ruta usar
+  final_path <- if (file.exists(dev_path)) {
+    message("✓ Usando CSS en modo DESARROLLO: ", dev_path)
+    dev_path
+  } else if (pkg_path != "" && file.exists(pkg_path)) {
+    message("✓ Usando CSS en modo PAQUETE INSTALADO: ", pkg_path)
+    pkg_path
+  } else {
+    warning("✗ Archivo CSS no encontrado en ninguna ruta")
+    return("/* Archivo CSS no encontrado */")
+  }
+
+  # Leer el archivo
+  css_content <- tryCatch({
+    readChar(final_path, file.info(final_path)$size)
+  }, error = function(e) {
+    warning("Error leyendo CSS: ", e$message)
+    return("/* Error leyendo archivo CSS */")
+  })
+
+  message("✓ CSS cargado: ", nchar(css_content), " caracteres")
+
+  return(css_content)
+}
 
 ui <- page_sidebar(
   theme = bs_theme(version = 5, bootswatch = "flatly"),
   title = "Rscience - Centralized Preview",
 
-  # --- TECHNICAL BLOCK: CSS TO HIDE CONTROL TABS ---
-  # Vincular el archivo externo
-  header = tags$head(
-    tags$link(rel = "stylesheet", type = "text/css", href = "mis_estilos/custom_styles.css")
-    ),
+  # CSS desde archivo externo
+  tags$head(
+    tags$style(HTML(get_custom_css()))
+  ),
+
+
 
   sidebar = sidebar(
     # MENU 1: Master (Orchestrator)
