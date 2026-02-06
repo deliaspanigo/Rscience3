@@ -1,0 +1,69 @@
+# tools_config.yml
+version: "1.0"
+last_updated: "2024-01-15"
+author: "Tu Nombre"
+
+
+
+ 
+ 
+   
+categories:
+  category01:
+    dev_note: "Herramientas asociadas a la estadistica descriptiva."
+    opt:
+      internal: "category_descriptive_tools"
+      external: "Descriptive tools"
+    description:
+      short: "Descriptive Tools SHORT."
+      long:  "Descriptive Tools LONG."
+  category02:
+    dev_note: "Estadisticas asociadas a los modelos lineales generales."
+    opt:
+      internal: "category_general_linear_models"
+      external: "General Linear Models"
+    description:
+      short: "General Linear Models description SHORT."
+      long:  "General Linear Models description LONG."
+      
+    
+    
+tools:
+  tool01:
+    note: "Scripts asociados a la estadística de una variable cualitativa."
+    opt:
+      internal: "tools_desc_1c"
+      external: "Descriptive - 1var cualitative"
+    description:
+      short: "Short tool description."
+      long:  "Long tool description."
+    vector_name_category: ["category01"]
+    vector_USC: ["Rs001_DESCRIPTIVE_1C_script001", "Rs001_DESCRIPTIVE_1C_script002", "Rs001_DESCRIPTIVE_1C_script003"]
+  tool02:
+    note: "Scripts asociados a ANOVA."
+    opt:
+      internal: "tools_lm_fix_anova_1way"
+      external: "Anova 1 way"
+    description:
+      short: "Short tool description."
+      long:  "Long tool description."
+    vector_name_category: ["category02"]
+    vector_USC: ["Rs002_LM_CC_FIX_ANOVA_01_1Way_script001", "Rs002_LM_CC_FIX_ANOVA_01_1Way_script001"]    
+  tool03:
+    note: "Scripts asociados a Lin Reg."
+    opt:
+      internal: "tools_lm_fix_reg_slr"
+      external: "Simple Linear Regresion"
+    description:
+      short: "Short tool description."
+      long:  "Long tool description."
+    vector_name_category: ["category03"]
+    vector_USC: ["Rs002_LM_CC_FIX_REG_01_SLR_script001", "Rs002_LM_CC_FIX_REG_01_SLR_script002"]  
+
+
+
+
+
+
+    
+    

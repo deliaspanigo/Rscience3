@@ -1,15 +1,19 @@
-# 0 - TOdos lso archivos
+# 1. Preparar y Guardar
 git add .
+git commit -m "Release: Versión 0.5.2 con mejoras generales"
 
-# 1. Perform the final commit for the release version.
-git commit -m "Tools..."
+# 2. Etiquetar la versión
+# Cambié '0.5.w' por 'v0.5.2' para que sea estándar
+git tag -a v0.5.2 -m "Versión estable 0.5.2 del paquete"
 
-# 2. Declare the annotated tag (using -a) to label the previous commit.
-# (Make sure to change 'v1.0.0' and the message).
-git tag -a 0.2.8 -m "Stable version 0.2.8 of the package."
+# 3. Subir TODO (cambios y etiquetas) de un solo golpe
+git push origin main --follow-tags# 1. Preparar y Guardar
+git add .
+git commit -m "Release: Versión 0.5.2 con mejoras generales"
 
-# 3. Push the commits from the current branch (e.g., 'main' or 'master') to the remote repository.
-git push
+# 2. Etiquetar la versión
+# Cambié '0.5.w' por 'v0.5.2' para que sea estándar
+git tag -a v0.5.2 -m "Versión estable 0.5.2 del paquete"
 
-# 4. Push the tags to the remote repository. This is the crucial step for the versioning!
-git push --tags
+# 3. Subir TODO (cambios y etiquetas) de un solo golpe
+git push origin main --follow-tags

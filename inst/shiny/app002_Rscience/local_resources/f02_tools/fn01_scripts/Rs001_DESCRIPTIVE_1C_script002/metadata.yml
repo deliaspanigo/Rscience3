@@ -1,0 +1,11 @@
+# local_resources/f02_tools/fn01_scripts/USC_000002/metadata.yml
+id: "USC_000002"
+dev_info: "Script for descriptive statistics for 1var C Cualitative with plots base on ggplot()."
+description_short: "The short description."
+description_long: "The long description."
+category: "Visualización"
+tags: ["descriptive", "1var", "c", "cualitative", "plots", "ggplot"]
+version: "0.0.1"
+date_last_update: "2025.02.01"
+module_file_name: "RShiny_modules.R"
+

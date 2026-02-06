@@ -1,0 +1,11 @@
+# local_resources/f02_tools/fn01_scripts/USC_000004/metadata.yml
+id: "USC_000004"
+dev_info: "Script for General Linear Model - Fixed Effects - Anova - Anova 1 Way."
+description_short: "The short description."
+description_long: "The long description."
+category: "Test"
+tags: ["test", "CQ", "anova", "pvalue", "p value"]
+version: "0.0.1"
+date_last_update: "2025.02.01"
+module_file_name: "RShiny_modules.R"
+

@@ -1,0 +1,16 @@
+methods:
+  r_datasets:
+    label: "Datasets de Librerías (R)"
+    icon: "code"
+    options: ["mtcars", "iris", "diamonds"]
+    
+  excel_file:
+    label: "Archivo Excel (.xlsx)"
+    icon: "file-excel"
+    allowed_ext: [".xlsx", ".xls"]
+    max_size_mb: 5
+    
+    
+auto_clean:
+  remove_na: false
+  clean_names: true # convierte "Variable 1" en "variable_1"

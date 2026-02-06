@@ -16,6 +16,6 @@ devtools::load_all()
 
 # 6. Ejecutar la aplicación
 shiny::runApp(
-  system.file("shiny/app003_software/app_software_2026.R", package = "Rscience3"),
+  system.file("shiny/app002_Rscience/app.R", package = "Rscience3"),
   display.mode = "normal"
 )

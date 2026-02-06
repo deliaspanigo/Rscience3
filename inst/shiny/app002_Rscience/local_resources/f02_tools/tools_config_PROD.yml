@@ -1,0 +1,106 @@
+# tools_config.yml
+version: "1.0"
+last_updated: "2024-01-15"
+author: "Tu Nombre"
+
+categories:
+  category01:
+    dev_note: "Herramientas asociadas a la estadistica descriptiva".
+    opt:
+      internal: "category_descriptive_tools"
+      external: "Descriptive tools"
+    description:
+      short: "Descriptive Tools SHORT."
+      long:  "Descriptive Tools LONG."
+  category02:
+    dev_note: "Estadisticas asociadas a los modelos lineales generales."
+    opt:
+      internal: "category_general_linear_models"
+      external: "General Linear Models"
+    description:
+      short: "General Linear Models description SHORT."
+      long:  "General Linear Models description LONG."
+      
+    
+    
+tools:
+  tool01:
+  note: "Scripts asociados a la estadística de una variable cualitativa."
+    opt:
+      internal: "tools_desc_1c"
+      external: "Descriptive - 1var cualitative"
+    description:
+      short: "Short tool description."
+      long:  "Long tool description."
+
+    
+scripts:
+  script001:
+    folder_script: "Rs001_DESCRIPTIVE_1C_s001"
+    module_file_path: "Rs001_DESCRIPTIVE_1C_s001/RShiny_modules.R"
+    note_dev: "Script para estadistica descriptiva de una variable cuantitativa con plotly.".
+    description:
+      short: "Short script description."
+      long: "Long script description"
+    keywords: "cuantitative table descriptive"
+
+    
+
+scripts:
+  
+  
+  
+tools:
+
+  Rs001_DESCRIPTIVE_1C:
+    id: "desc_1c"
+    name: "Descriptive - 1 Cuantitative"
+    category_groups: 
+    cat_code: "descriptive"
+    subcategory: "Univariate"
+    description_short: "Frequency analysis for one cuantitative variable. - SHORT."
+    description_long:  "Frequency analysis for one cuantitative variable. - LONG."
+    keywords: "cuantitative table descriptive"
+    statistic_group: ["Descriptive"]
+    folder_scripts:
+      script001:
+        folder_script: "Rs001_DESCRIPTIVE_1C_s001"
+        special_module_file_path: "Rs001_DESCRIPTIVE_1C_s001/RShiny_modules.R"
+        description_short: "El script 001 1C SHORT DESCRIPTIVA."
+        description_long:  "El script 001 1C LONG  DESCRIPTIVA."
+      script002:
+        folder_script: "Rs001_DESCRIPTIVE_1C_s002"
+        special_module_file_path: "Rs001_DESCRIPTIVE_1C_s002/RShiny_modules.R"
+        description_short: "El script 002 SHORT  DESCRIPTIVA."
+        description_long: "El script 002 LONG  DESCRIPTIVA."
+
+  Rs002_LM_QQ_FIX_ANOVA_01_1Way:
+    id: "anova_1way"
+    name: "Linear Model - Fixed Effects - Anova One Way"
+    category: "Linear Model"
+    cat_code: "general_linear_model"
+    subcategory: "ANOVA"
+    description_short: "Linear Model - One-way ANOVA with fixed effects. SHORT."
+    description_long:  "Linear Model - One-way ANOVA with fixed effects. LONG."
+    keywords: "anova fixed effects one way lm"
+    statistic_group: ["Linear Models"]
+    folder_scripts:
+      script001:
+        folder_script: "Rs002_LM_QQ_FIX_ANOVA_01_1Way_s001"
+        special_module_file_path: "Rs002_LM_QQ_FIX_ANOVA_01_1Way_s001/RShiny_modules.R"
+        description_short: "El script 001 short ANOVA."
+        description_long:  "El script 001 long  ANOVA."
+      script002:
+        folder_script: "Rs002_LM_QQ_FIX_ANOVA_01_1Way_s002"
+        special_module_file_path: "Rs002_LM_QQ_FIX_ANOVA_01_1Way_s002/RShiny_modules.R"
+        description_short: "El script 002 short  ANOVA."
+        description_long: "El script 002 long  ANOVA."
+
+
+
+
+
+
+
+    
+    

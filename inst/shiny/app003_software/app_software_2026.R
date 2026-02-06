@@ -81,9 +81,9 @@ ui <- page_sidebar(
     navset_pill_list(
       id = "menu_fixed",
       well = FALSE,
-      nav_panel("1. Dataset", value = "tab_import"),
+      nav_panel("01. Import", value = "tab_import"),
       if(SHOW_DEBUG) nav_panel("1.1. Debug Dataset", value = "tab_import_DEBUG"),
-      nav_panel("2. Tools & Scripts", value = "tab_tools"),
+      nav_panel("02. Tools", value = "tab_tools"),
       if(SHOW_DEBUG) nav_panel("2.1. Tools Debug", value = "tab_tools_DEBUG"),
       if(SHOW_DEBUG) nav_panel("3.1. Is Done All", value = "tab_is_done_all_DEBUG"),
 
@@ -1150,6 +1150,7 @@ server <- function(input, output, session) {
     )
   })
   # --- PHASE 06: DYNAMIC RENDERING ---
+
 
   # 1. Render Lateral Menu (Tool)
   output$render_tool_menu <- renderUI({
