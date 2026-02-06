@@ -1,7 +1,7 @@
 Package: Rscience3
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.4
+Title: Herramientas para Rscience
+Version: 0.5.2
 Authors@R: c(
     person(
       "David", "Elias Panigo",
@@ -9,30 +9,12 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Desarrollo de herramientas para análisis científico.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: 
-    bslib,
-    colourpicker,
-    devtools,
-    DT,
-    EnvStats,
-    future,
-    here,
-    kableExtra,
-    openxlsx,
-    plotly,
-    promises,
-    quarto,
-    shiny,
-    shinyjs,
-    usethis,
-    webshot2
-Depends: 
-    tidyverse
+Imports:
+Depends:
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 Suggests: 
