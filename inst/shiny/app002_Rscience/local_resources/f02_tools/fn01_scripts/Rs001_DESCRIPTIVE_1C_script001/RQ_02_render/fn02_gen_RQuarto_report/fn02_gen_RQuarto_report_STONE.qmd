@@ -26,7 +26,7 @@ library("fs")
 library("knitr")
 library("tidyverse")
 library("kableExtra")
-
+library("quarto")
 # Funtions
 # source(file = "fn_local.R")
 source(file = "../AAA_fn/fn_actions.R")
@@ -82,7 +82,7 @@ if(!the_output) knitr::knit_exit()
 ## Pre render
 ```{r eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE}
 
-library("quarto")
+
 
 # Definimos la ruta de salida completa
 str_qmd_input_file_name <- str_new_qmd_file_name

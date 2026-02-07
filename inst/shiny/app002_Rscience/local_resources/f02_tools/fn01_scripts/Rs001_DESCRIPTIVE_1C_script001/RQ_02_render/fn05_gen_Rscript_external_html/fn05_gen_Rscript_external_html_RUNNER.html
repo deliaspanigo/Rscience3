@@ -19,6 +19,40 @@ ul.task-list li input[type="checkbox"] {
 width: 0.8em;
 margin: 0 0.8em 0.2em -1em;  vertical-align: middle;
 }
+
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+}
+pre.numberSource { margin-left: 3em; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -3074,186 +3108,98 @@ margin-bottom: 10px;
 
 
 <p>Tool: Rs003_LM_QQ_FIX_BAL_ANOVA_1Way_s001<br>
-File name qmd: fn09_gen_xlsx_STONE.qmd File name html: fn09_gen_xlsx_STONE.html</p>
-<b>Runner Execution Started:</b> 2026-02-07 11:06:36 <br>
+File name qmd: fn05_gen_Rscript_external_html_RUNNER.qmd File name html: fn05_gen_Rscript_external_html_RUNNER.html</p>
+<b>Runner Execution Started:</b> 2026-02-07 11:01:04 <br>
 <hr>
-<section id="basics-status-and-cleaning." class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Basics status and cleaning.</h1>
-<section id="checking-hidden-runner-html-file-at-local-folder." class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="checking-hidden-runner-html-file-at-local-folder."><span class="header-section-number">1.1</span> Checking Hidden Runner HTML file at local folder.</h2>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>File HTML hidden-runner must not exists or be deleted previous execution.</p>
-</div>
-</div>
-<p><b>Processing single file:</b> <code>fn09_gen_xlsx_STONE.html</code><br><small style="color: #6c757d; font-style: italic;">Action: Delete single file within Sandbox.</small><br><span style="color: #28a745;">✔ <b>Success:</b> File deleted and verified within Sandbox.</span><br><br></p>
-</section>
-<section id="output-local-folder." class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="output-local-folder."><span class="header-section-number">1.2</span> Output local folder.</h2>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Must exists a <code>zzz_output_local</code> at local folder and must be empty before render files.</p>
-</div>
-</div>
-<p><b>Managing folder lifecycle:</b> <code>zzz_output_local</code><br><small style="color: #6c757d; font-style: italic;">Action: Ensure existence, empty content, and audit metadata.</small><br><span style="color: #6c757d;">ℹ <b>Info:</b> Directory not found. Creating…</span><br><span style="color: #28a745;">✔ <b>Success:</b> Directory created.</span><br><span style="color: #28a745;">✔ <b>Verification:</b> Sandbox path is ready.</span><br><small style="color: #6c757d;"><b>Audit:</b> Permissions: <code>rwxr-xr-x</code> | Final Item Count: <b>0</b></small><br><br></p>
-</section>
-<section id="stone-folder." class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="stone-folder."><span class="header-section-number">1.3</span> Stone folder.</h2>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Must exists a <code>reporting_stone_files</code> at local folder.</p>
-</div>
-</div>
-<p><b>Verifying folder:</b> <code>reporting_stone_files</code><br><small style="color: #6c757d; font-style: italic;">Action: Existence and accessibility audit (External &amp; Internal).</small><br><span style="color: #28a745;">✔ <b>Success:</b> Directory exists and is accessible.</span><br><small style="color: #6c757d;"><b>Audit details:</b> Contains 7 items | Permissions: rwxrwxr-x</small><br></p>
-</section>
-<section id="render-output-file" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="render-output-file"><span class="header-section-number">1.4</span> Render output file</h2>
-<p><b>Processing single file:</b> <code>reporting_stone_files/fn09_gen_xlsx_RUNNER.xlsx</code><br><small style="color: #6c757d; font-style: italic;">Action: Delete single file within Sandbox.</small><br><span style="color: #28a745;">✔ <b>Success:</b> File deleted and verified within Sandbox.</span><br><br></p>
-</section>
-<section id="external-output-folder." class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="external-output-folder."><span class="header-section-number">1.5</span> External output folder.</h2>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Must exists a <code>../zzz_zzz_output</code> at local folder.</p>
-</div>
-</div>
-<p><b>Verifying folder:</b> <code>../zzz_zzz_output</code><br><small style="color: #6c757d; font-style: italic;">Action: Existence and accessibility audit (External &amp; Internal).</small><br><span style="color: #28a745;">✔ <b>Success:</b> Directory exists and is accessible.</span><br><small style="color: #6c757d;"><b>Audit details:</b> Contains 8 items | Permissions: rwxr-xr-x</small><br></p>
-</section>
-</section>
-<section id="rendering-rquarto" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Rendering RQuarto</h1>
-<p>[31m</p>
-<p>processing file: fn09_gen_xlsx_RUNNER.qmd [39m |<br>
-| | 0% |<br>
-|….. | 9%<br>
-|<br>
-|……… | 18% [unnamed-chunk-1] |<br>
-|………….. | 27%<br>
-|<br>
-|………………. | 36% [unnamed-chunk-2] |<br>
-|…………………… | 45%<br>
-|<br>
-|………………………. | 55% [unnamed-chunk-3] |<br>
-|…………………………… | 64%<br>
-|<br>
-|……………………………….. | 73% [unnamed-chunk-4] |<br>
-|……………………………………. | 82%<br>
-|<br>
-|……………………………………….. | 91% [unnamed-chunk-5] |<br>
-|…………………………………………….| 100%</p>
-<p>[31moutput file: fn09_gen_xlsx_RUNNER.knit.md</p>
-<p>[39m[1mpandoc [22m to: html output-file: fn09_gen_xlsx_RUNNER.html standalone: true section-divs: true html-math-method: mathjax wrap: none default-image-extension: png</p>
-<p>[1mmetadata[22m document-css: false link-citations: true date-format: long lang: en title: Rscience - Parameterized Report theme: cosmo</p>
-<p>Output created: fn09_gen_xlsx_RUNNER.html</p>
-<p><b>Verifying file:</b> <code>reporting_stone_files/fn09_gen_xlsx_RUNNER.xlsx</code><br><small style="color: #6c757d; font-style: italic;">Action: Existence, type, and metadata audit.</small><br><span style="color: #28a745;">✔ <b>Success:</b> The file exists and is accessible.</span><br><small style="color: #6c757d;"><b>Audit details:</b> Size: 22.1K | Modified: 2026-02-07 11:06:41 | Perms: rw-rw-r–</small><br><br><b>Renaming &amp; Relocating File</b><br><small style="color: #6c757d; font-style: italic;">Action: Safe move within Sandbox audit.</small><br><small style="color: #6c757d;"><b>FROM:</b> <code>reporting_stone_files/fn09_gen_xlsx_RUNNER.xlsx</code></small><br><small style="color: #6c757d;"><b>TO:</b>   <code>zzz_output_local/zzz_output_fn09_gen_xlsx_RUNNER.xlsx</code></small><br><span style="color: #28a745;">✔ <b>Success:</b> File renamed and verified.</span><br><small style="color: #6c757d;"><b>Audit:</b> Size: 22.1K | New Path Verified: YES</small><br><br></p>
-</section>
-<section id="export-zzz_output-files-and-folders." class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Export zzz_output files and folders.</h1>
-<b>Export Audit:</b> <code>zzz_output*</code> (Archivos y Carpetas Finales)<br><small style="color: #6c757d; font-style: italic;">Status: <span style="background:#007bff; color:white; padding:2px 5px; border-radius:3px; font-size:10px;">PRODUCTION</span></small><br>
-<div style="background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 8px; margin: 10px 0; border-radius: 4px;">
-<b>Destination Path:</b> <code>../zzz_zzz_output</code>
-</div>
-<div style="margin-bottom: 15px; border-left: 4px solid #dee2e6; padding-left: 10px;">
-<small style="color: #333;"><b>Overwrite:</b> <span style="color: #4682B4; font-weight: bold;">Safe Mode (Disabled)</span></small><br><small style="color: #333;"><b>Scan:</b> Detected <b>1</b> elements (Files/Folders).</small>
-</div>
-<table class="table table-striped table-hover table-condensed" style="width: auto !important; ">
-<thead>
-<tr>
-<th style="text-align:left;">
-</th>
-<th style="text-align:center;">
-#
-</th>
-<th style="text-align:left;">
-Relative Export Path
-</th>
-<th style="text-align:left;">
-Type
-</th>
-<th style="text-align:left;">
-Size
-</th>
-<th style="text-align:left;">
-Status
-</th>
-<th style="text-align:left;">
-Action
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;width: 40px; color: rgba(108, 117, 125, 255) !important;">
-zzz_output_local/zzz_output_fn09_gen_xlsx_RUNNER.xlsx
-</td>
-<td style="text-align:center;width: 400px; ">
-1
-</td>
-<td style="text-align:left;">
-<code>zzz_output_fn09_gen_xlsx_RUNNER.xlsx</code>
-</td>
-<td style="text-align:left;">
-File
-</td>
-<td style="text-align:left;">
-22.1K
-</td>
-<td style="text-align:left;">
-New
-</td>
-<td style="text-align:left;">
-<span style=" font-weight: bold;    color: white !important;border-radius: 4px; padding-right: 4px; padding-left: 4px; background-color: rgba(40, 167, 69, 255) !important;">Copied</span>
-</td>
-</tr>
-</tbody>
-</table>
-<p><br><span style="color: #28a745;">✔ <b>Audit Complete:</b> All files and folders processed successfully.</span><br><br></p>
-</section>
-<section id="final-summary" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Final Summary</h1>
+<hr>
+<p><a href="data:application/octet-stream;base64,IyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIEZST00gRklMRTogZm4wMV9SUXVhcnRvX1JlcG9ydF9NT0QucW1kCiMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KCiMgIyAjICMgIyBTZWN0aW9uIDEzIC0gRGVzY3JpcHRpdmUgQW5hbHlzaXMgLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIExpYnJlcsOtYXMgbmVjZXNhcmlhcyBwYXJhIGVzdGEgc2VjY2nDs24KbGlicmFyeShkcGx5cikKbGlicmFyeShnZ3Bsb3QyKQpsaWJyYXJ5KHBsb3RseSkKbGlicmFyeShtb21lbnRzKSAjIFBhcmEgYXNpbWV0csOtYSB5IGN1cnRvc2lzCmxpYnJhcnkoa25pdHIpCmxpYnJhcnkoa2FibGVFeHRyYSkKCiMgQXNlZ3VyYW1vcyBxdWUgbG9zIGRhdG9zIHByb3ZlbmdhbiBkZWwgbWluaWRhdGFzZXQgZ2VuZXJhZG8gZW4gbGEgc2VjY2nDs24gMDYKbWluaWRhdGFzZXQgPC0gbXRjYXJzCnZhcl9uYW1lX3J2IDwtICJtcGciCmRhdGFfdmVjdG9yIDwtIG1pbmlkYXRhc2V0W1t2YXJfbmFtZV9ydl1dCnZhcl9sYWJlbCAgIDwtIHZhcl9uYW1lX3J2CgojIEZ1bmNpw7NuIHBhcmEgY2FsY3VsYXIgZWwgYmxvcXVlIGVzdGFkw61zdGljbwpkZl9zdGF0c19ydiA8LSBkYXRhLmZyYW1lKAogIk3DqXRyaWNhIiA9IGMoIk4gVG90YWwiLCAiTiBWw6FsaWRvcyIsICJNw61uaW1vIiwgIk3DoXhpbW8iLCAiTWVkaWEiLCAKICAgICAgICAgICAgICAgIk1lZGlhbmEiLCAiVmFyaWFuemEiLCAiRGVzdsOtbyBFc3TDoW5kYXIiLCAiQ29lZi4gVmFyaWFjacOzbiAoJSkiLAogICAgICAgICAgICAgICAiRXJyb3IgRXN0w6FuZGFyIiwgIkFzaW1ldHLDrWEiLCAiQ3VydG9zaXMiKSwKICJWYWxvciIgPSBjKAogICBsZW5ndGgoZGF0YV92ZWN0b3IpLAogICBzdW0oIWlzLm5hKGRhdGFfdmVjdG9yKSksCiAgIG1pbihkYXRhX3ZlY3RvciwgbmEucm0gPSBUUlVFKSwKICAgbWF4KGRhdGFfdmVjdG9yLCBuYS5ybSA9IFRSVUUpLAogICBtZWFuKGRhdGFfdmVjdG9yLCBuYS5ybSA9IFRSVUUpLAogICBtZWRpYW4oZGF0YV92ZWN0b3IsIG5hLnJtID0gVFJVRSksCiAgIHZhcihkYXRhX3ZlY3RvciwgbmEucm0gPSBUUlVFKSwKICAgc2QoZGF0YV92ZWN0b3IsIG5hLnJtID0gVFJVRSksCiAgIChzZChkYXRhX3ZlY3RvciwgbmEucm0gPSBUUlVFKSAvIG1lYW4oZGF0YV92ZWN0b3IsIG5hLnJtID0gVFJVRSkpICogMTAwLAogICBzZChkYXRhX3ZlY3RvciwgbmEucm0gPSBUUlVFKSAvIHNxcnQoc3VtKCFpcy5uYShkYXRhX3ZlY3RvcikpKSwKICAgbW9tZW50czo6c2tld25lc3MoZGF0YV92ZWN0b3IsIG5hLnJtID0gVFJVRSksCiAgIG1vbWVudHM6Omt1cnRvc2lzKGRhdGFfdmVjdG9yLCBuYS5ybSA9IFRSVUUpCiApCikKCmtuaXRyOjprYWJsZShkZl9zdGF0c19ydiwgZGlnaXRzID0gNCwgY2FwdGlvbiA9IHBhc3RlKCJFc3RhZMOtc3RpY29zIGRlIiwgdmFyX2xhYmVsKSkgJT4lCiBrYWJsZUV4dHJhOjprYWJsZV9zdHlsaW5nKGJvb3RzdHJhcF9vcHRpb25zID0gYygic3RyaXBlZCIsICJob3ZlciIsICJjb25kZW5zZWQiKSwgZnVsbF93aWR0aCA9IEYpCgpwcm9iX3ZlY3RvciA8LSBjKDAsIDAuMDUsIDAuMSwgMC4yNSwgMC41LCAwLjc1LCAwLjksIDAuOTUsIDEpCmRmX3BlcmNlbnRpbGVzIDwtIGRhdGEuZnJhbWUoCiAiUGVyY2VudGlsIiA9IHBhc3RlMChwcm9iX3ZlY3RvciAqIDEwMCwgIiUiKSwKICJWYWxvciIgPSBxdWFudGlsZShkYXRhX3ZlY3RvciwgcHJvYnMgPSBwcm9iX3ZlY3RvciwgbmEucm0gPSBUUlVFKQopCgprbml0cjo6a2FibGUoZGZfcGVyY2VudGlsZXMsIHJvdy5uYW1lcyA9IEZBTFNFKSAlPiUKIGthYmxlRXh0cmE6OmthYmxlX3N0eWxpbmcoYm9vdHN0cmFwX29wdGlvbnMgPSAiYm9yZGVyZWQiLCBmdWxsX3dpZHRoID0gRikKCnBsb3RfaGlzdCA8LSBnZ3Bsb3QoZGF0YS5mcmFtZSh2YWwgPSBkYXRhX3ZlY3RvciksIGFlcyh4ID0gdmFsKSkgKwogZ2VvbV9oaXN0b2dyYW0oYWVzKHkgPSAuLmRlbnNpdHkuLiksIGJpbnMgPSAyMCwgZmlsbCA9ICJzdGVlbGJsdWUiLCBjb2xvciA9ICJ3aGl0ZSIsIGFscGhhID0gMC43KSArCiBnZW9tX2RlbnNpdHkoY29sb3IgPSAiZGFya3JlZCIsIHNpemUgPSAxKSArCiBsYWJzKHRpdGxlID0gcGFzdGUoIkhpc3RvZ3JhbWEgZGUiLCB2YXJfbGFiZWwpLCB4ID0gdmFyX2xhYmVsLCB5ID0gIkRlbnNpZGFkIikgKwogdGhlbWVfbWluaW1hbCgpCgpwbG90bHk6OmdncGxvdGx5KHBsb3RfaGlzdCkKCnBsb3RfYm94IDwtIGdncGxvdChkYXRhLmZyYW1lKHZhbCA9IGRhdGFfdmVjdG9yKSwgYWVzKHkgPSB2YWwsIHggPSAiIikpICsKIGdlb21fYm94cGxvdChmaWxsID0gImxpZ2h0Z3JheSIsIG91dGxpZXIuY29sb3IgPSAicmVkIiwgb3V0bGllci5zaGFwZSA9IDE2KSArCiBsYWJzKHRpdGxlID0gcGFzdGUoIkJveHBsb3QgZGUiLCB2YXJfbGFiZWwpLCB5ID0gdmFyX2xhYmVsLCB4ID0gIiIpICsKIHRoZW1lX21pbmltYWwoKSArCiBjb29yZF9mbGlwKCkKCnBsb3RseTo6Z2dwbG90bHkocGxvdF9ib3gpCgoK" download="zzz_output_fn03_gen_Rscript_external.R" style="background-color: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-flex; align-items: center; gap: 8px; font-family: sans-serif; font-size: 13px;"><span>📥 Download Original Script: </span><code>zzz_output_fn03_gen_Rscript_external.R</code></a><br><br></p>
+<b>Source Code Audit:</b><br><small style="color: #6c757d; font-style: italic;">File: zzz_output_fn03_gen_Rscript_external.R</small><br><br>
+<details style="border: 1px solid #dee2e6; border-radius: 5px; padding: 10px; background-color: #fcfcfc;">
+<summary style="cursor: pointer; font-weight: bold; color: #007bff;">
+Click to expand / collapse script source code
+</summary>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># --------------------------------------------------</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># FROM FILE: fn01_RQuarto_Report_MOD.qmd</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --------------------------------------------------</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># # # # # Section 13 - Descriptive Analysis ----------------------------------</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Librerías necesarias para esta sección</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plotly)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(moments) <span class="co"># Para asimetría y curtosis</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Aseguramos que los datos provengan del minidataset generado en la sección 06</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>minidataset <span class="ot">&lt;-</span> mtcars</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>var_name_rv <span class="ot">&lt;-</span> <span class="st">&quot;mpg&quot;</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>data_vector <span class="ot">&lt;-</span> minidataset[[var_name_rv]]</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>var_label   <span class="ot">&lt;-</span> var_name_rv</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Función para calcular el bloque estadístico</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>df_stats_rv <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a> <span class="st">&quot;Métrica&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;N Total&quot;</span>, <span class="st">&quot;N Válidos&quot;</span>, <span class="st">&quot;Mínimo&quot;</span>, <span class="st">&quot;Máximo&quot;</span>, <span class="st">&quot;Media&quot;</span>, </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>               <span class="st">&quot;Mediana&quot;</span>, <span class="st">&quot;Varianza&quot;</span>, <span class="st">&quot;Desvío Estándar&quot;</span>, <span class="st">&quot;Coef. Variación (%)&quot;</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>               <span class="st">&quot;Error Estándar&quot;</span>, <span class="st">&quot;Asimetría&quot;</span>, <span class="st">&quot;Curtosis&quot;</span>),</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a> <span class="st">&quot;Valor&quot;</span> <span class="ot">=</span> <span class="fu">c</span>(</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>   <span class="fu">length</span>(data_vector),</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>   <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(data_vector)),</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>   <span class="fu">min</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>   <span class="fu">max</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>   <span class="fu">mean</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>   <span class="fu">median</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>   <span class="fu">var</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>   <span class="fu">sd</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>   (<span class="fu">sd</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fu">mean</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>   <span class="fu">sd</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">/</span> <span class="fu">sqrt</span>(<span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(data_vector))),</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>   moments<span class="sc">::</span><span class="fu">skewness</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>   moments<span class="sc">::</span><span class="fu">kurtosis</span>(data_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a> )</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_stats_rv, <span class="at">digits =</span> <span class="dv">4</span>, <span class="at">caption =</span> <span class="fu">paste</span>(<span class="st">&quot;Estadísticos de&quot;</span>, var_label)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a> kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, <span class="st">&quot;hover&quot;</span>, <span class="st">&quot;condensed&quot;</span>), <span class="at">full_width =</span> F)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>prob_vector <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.05</span>, <span class="fl">0.1</span>, <span class="fl">0.25</span>, <span class="fl">0.5</span>, <span class="fl">0.75</span>, <span class="fl">0.9</span>, <span class="fl">0.95</span>, <span class="dv">1</span>)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>df_percentiles <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a> <span class="st">&quot;Percentil&quot;</span> <span class="ot">=</span> <span class="fu">paste0</span>(prob_vector <span class="sc">*</span> <span class="dv">100</span>, <span class="st">&quot;%&quot;</span>),</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a> <span class="st">&quot;Valor&quot;</span> <span class="ot">=</span> <span class="fu">quantile</span>(data_vector, <span class="at">probs =</span> prob_vector, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df_percentiles, <span class="at">row.names =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a> kableExtra<span class="sc">::</span><span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="st">&quot;bordered&quot;</span>, <span class="at">full_width =</span> F)</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>plot_hist <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">val =</span> data_vector), <span class="fu">aes</span>(<span class="at">x =</span> val)) <span class="sc">+</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">bins =</span> <span class="dv">20</span>, <span class="at">fill =</span> <span class="st">&quot;steelblue&quot;</span>, <span class="at">color =</span> <span class="st">&quot;white&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_density</span>(<span class="at">color =</span> <span class="st">&quot;darkred&quot;</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a> <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Histograma de&quot;</span>, var_label), <span class="at">x =</span> var_label, <span class="at">y =</span> <span class="st">&quot;Densidad&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>()</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>plotly<span class="sc">::</span><span class="fu">ggplotly</span>(plot_hist)</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>plot_box <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="fu">data.frame</span>(<span class="at">val =</span> data_vector), <span class="fu">aes</span>(<span class="at">y =</span> val, <span class="at">x =</span> <span class="st">&quot;&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a> <span class="fu">geom_boxplot</span>(<span class="at">fill =</span> <span class="st">&quot;lightgray&quot;</span>, <span class="at">outlier.color =</span> <span class="st">&quot;red&quot;</span>, <span class="at">outlier.shape =</span> <span class="dv">16</span>) <span class="sc">+</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a> <span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Boxplot de&quot;</span>, var_label), <span class="at">y =</span> var_label, <span class="at">x =</span> <span class="st">&quot;&quot;</span>) <span class="sc">+</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a> <span class="fu">coord_flip</span>()</span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a>plotly<span class="sc">::</span><span class="fu">ggplotly</span>(plot_box)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<p><br></p>
+<section id="final-summary" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Final Summary</h1>
 <hr>
 <div style="background-color: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; font-family: sans-serif; color: #333;">
 <b style="display: block; color: #495057; font-size: 1.1em; margin-bottom: 10px;">🏁 Final Execution Summary</b>
 <div style="margin-bottom: 5px;">
-🕒 <b>Start Time:</b> 11:06:36
+🕒 <b>Start Time:</b> 11:01:04
 </div>
 <div style="margin-bottom: 5px;">
-🏁 <b>End Time: </b> 11:06:42
+🏁 <b>End Time: </b> 11:01:05
 </div>
 <div style="margin-bottom: 5px;">
-⌛ <b>Total Duration:</b> <span style="color: #007bff; font-weight: bold;">6.07 secs</span>
+⌛ <b>Total Duration:</b> <span style="color: #007bff; font-weight: bold;">1.37 secs</span>
 </div>
 </div>
 <div style="text-align: center; margin-top: 10px;">
