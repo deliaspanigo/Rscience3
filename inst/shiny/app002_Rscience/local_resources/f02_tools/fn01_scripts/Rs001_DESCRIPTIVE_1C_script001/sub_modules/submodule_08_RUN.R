@@ -212,7 +212,11 @@ submodule_08_RUN_server <- function(id, internal_ORH_02_temporal_FF,
         for (act in all_actions) {
           task <- pipe[[act]]
           out <- if(!is.null(task$output_pattern)) find_file_recursively(root, task$output_pattern) else NULL
-          if (is.null(out)) { quarto::quarto_render(input=task$qmd_file, execute_dir=fs::path_dir(task$qmd_file), quiet=TRUE) }
+          if (is.null(out)) {
+            quarto::quarto_render(input=task$qmd_file,
+                                  execute_dir=fs::path_dir(task$qmd_file),
+                                  quiet=TRUE,
+                                  as_job = FALSE) }
         }
       }, error = function(e) { message("Error: ", e$message) })
       module_state$is_running <- FALSE; check_file_exists()

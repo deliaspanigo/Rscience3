@@ -129,6 +129,7 @@ step03_04_01 <- function(){
   
 quarto::quarto_render(
   input = str_qmd_file_path,
+  as_job = FALSE,
   execute_dir = str_folder_output_local,
   quiet = F
 )
