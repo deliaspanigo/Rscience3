@@ -25,11 +25,12 @@ ui <- bslib::page_navbar(
   sidebar = bslib::sidebar(
     width = 250,
     div(
+      id = "all_all_all",
       style = "padding: 10px; background: rgba(0,0,0,0.05); border-radius: 8px; margin-bottom: 20px;",
       shinyWidgets::materialSwitch(
         inputId = "debug_mode",
         label = tags$b("Engineer View"),
-        value = TRUE,
+        value = FALSE, #TRUE,
         status = "danger"
       )
     ),
@@ -71,6 +72,7 @@ ui <- bslib::page_navbar(
 # --- 3. SERVER: LÓGICA DE LA APP ---
 server <- function(input, output, session) {
 
+  observe({shinyjs::hide("all_all_all")})
   # --- LÓGICA DE VISIBILIDAD DEBUG (Engineer View) ---
   observeEvent(input$debug_mode, {
 
