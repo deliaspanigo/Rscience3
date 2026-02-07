@@ -1,7 +1,7 @@
 Package: Rscience3
 Type: Package
 Title: Herramientas para Rscience
-Version: 0.6.6
+Version: 0.6.7
 Authors@R: c(
     person(
       "David", "Elias Panigo",
@@ -42,5 +42,4 @@ RoxygenNote: 7.3.3
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-Note: La siguiente liena fuerz aa R a no filtrar arhcvios inst
-BuildResaveData: no
+
