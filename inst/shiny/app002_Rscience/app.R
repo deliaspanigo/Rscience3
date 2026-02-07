@@ -30,7 +30,7 @@ ui <- bslib::page_navbar(
       shinyWidgets::materialSwitch(
         inputId = "debug_mode",
         label = tags$b("Engineer View"),
-        value = FALSE, #TRUE,
+        value = TRUE,
         status = "danger"
       )
     ),
@@ -134,7 +134,7 @@ server <- function(input, output, session) {
   default_output_list <- list(ready = FALSE, description_short = "Waiting...", diff_secs = 0)
   # Módulos
   RO_01_import_dataset <- mod_import_hub_server(id = "main_import", check_external = BigBang, debug_toggle = status_toggle)
-  RO_02_tools <- mod_tools_hub_server(id = "main_tools", config_path = "local_resources/f02_tools/fn02_menues/super_menu01.yml", check_external = BigBang, debug_toggle = status_toggle)
+  RO_02_tools <- mod_tools_hub_server(id = "main_tools", config_path = "local/f03_tools/super_menu01.yml", check_external = BigBang, debug_toggle = status_toggle)
 
   # --- FASE 03: CENTRAL ---
   ORH_01_CENTRAL <- reactive({
@@ -194,7 +194,7 @@ server <- function(input, output, session) {
     print("B")
 
     # Construcción de rutas (simplificado para brevedad)
-    str_ALL_scripts_root_INFO      <- "shiny/app002_Rscience/local_resources/f02_tools/fn01_scripts"
+    str_ALL_scripts_root_INFO      <- "shiny/app002_Rscience/local/f02_scripts"
     str_SELECTED_script_subfolder  <- internal_tools_bundle$script
     str_MODULE_filename            <- "RShiny_modules.R"
 
