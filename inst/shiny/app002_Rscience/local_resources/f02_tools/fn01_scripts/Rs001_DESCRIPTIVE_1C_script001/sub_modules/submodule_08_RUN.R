@@ -112,7 +112,7 @@ submodule_08_RUN_server <- function(id, internal_ORH_02_temporal_FF,
         "action01" = list(description = "Copy & Mod QMD", qmd_file = find_file_recursively(root, "fn01_copy_and_mod_RQuarto_STONE\\.qmd$"), output_pattern = NULL, dependencies = NULL),
         "action02" = list(description = "HTML Report Generation", qmd_file = find_file_recursively(root, "fn02_gen_RQuarto_report_STONE\\.qmd$"), output_pattern = "zzz_zzz_output/zzz_output_fn01_RQuarto_Report_MOD\\.html$", export_name = "RQuarto_Rcode.html", dependencies = c("action01")),
         "action03" = list(description = "R-Script Analysis", qmd_file = find_file_recursively(root, "fn03_gen_Rscript_STONE\\.qmd$"), output_pattern = "zzz_zzz_output/zzz_output_fn03_gen_Rscript_external\\.R$", export_name = "Analysis.R", dependencies = c("action01")),
-        "action04" = list(description = "Data Environment (RData)", qmd_file = find_file_recursively(root, "fn04_gen_RData_from_Rscript_internal_STONE\\.qmd$"), output_pattern = "zzz_zzz_output/zzz_output_fn04_RData_Rscript_internal\\.RData$", export_name = "Data.RData", dependencies = c("action03")),
+        "action04" = list(description = "Data Environment (RData)", qmd_file = find_file_recursively(root, "fn04_STONE\\.qmd$"), output_pattern = "zzz_zzz_output/zzz_output_fn04_RData\\.RData$", export_name = "Data.RData", dependencies = c("action03")),
         "action05" = list(description = "Rscript HTML", qmd_file = find_file_recursively(root, "fn05_gen_Rscript_external_html_STONE\\.qmd$"), output_pattern = "zzz_zzz_output/zzz_output_fn05_gen_Rscript_external_html_RUNNER\\.html$", export_name = "External.html", dependencies = c("action03")),
         "action06" = list(description = "Report PDF", qmd_file = find_file_recursively(root, "fn06_gen_pdf_STONE\\.qmd$"), output_pattern = "zzz_zzz_output/zzz_output_fn06_gen_pdf_RUNNER\\.pdf$", export_name = "PDF_Report.pdf", dependencies = c("action04")),
         "action07" = list(description = "Report Revealjs", qmd_file = find_file_recursively(root, "fn07_STONE\\.qmd$"), output_pattern = "zzz_zzz_output/zzz_output_fn07_RUNNER\\.html$", export_name = "Revealjs_Report.html", dependencies = c("action04")),
@@ -213,12 +213,13 @@ submodule_08_RUN_server <- function(id, internal_ORH_02_temporal_FF,
           task <- pipe[[act]]
           out <- if(!is.null(task$output_pattern)) find_file_recursively(root, task$output_pattern) else NULL
           if (is.null(out)) {
+            print(task$qmd_file)
             quarto::quarto_render(input=task$qmd_file,
                                   execute_dir=fs::path_dir(task$qmd_file),
                                   quiet=TRUE,
                                   as_job = FALSE) }
         }
-      }, error = function(e) { message("Error: ", e$message) })
+      }, error = function(e) { message("Error333: ", e$message) })
       module_state$is_running <- FALSE; check_file_exists()
     })
 

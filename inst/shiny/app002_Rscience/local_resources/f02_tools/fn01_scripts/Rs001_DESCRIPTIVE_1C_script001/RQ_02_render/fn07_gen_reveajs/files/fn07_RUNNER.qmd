@@ -75,7 +75,7 @@ knitr::opts_chunk$set(
 # Basiscs
 
 str_input_folder_path <- "../../zzz_zzz_output"
-str_file_name_RData_internal <- "zzz_output_fn04_RData_Rscript_internal.RData"
+str_file_name_RData_internal <- "zzz_output_fn04_RData.RData"
 str_file_path_RData_internal <- file.path(str_input_folder_path, str_file_name_RData_internal)
 
 

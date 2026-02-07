@@ -49,7 +49,7 @@ source(file = "../AAA_fn/fn_run.R")
 
 ```{r basics, eval=TRUE, echo=FALSE, results='asis'}
 # Files
-    str_file_name_RData_internal_file <- "zzz_output_fn04_RData_Rscript_internal.RData"
+    str_file_name_RData_internal_file <- "zzz_output_fn04_RData.RData"
     str_file_hidden_runner_html_file <- "fn07_STONE.html"
     str_stone_gen_report_qmd_file <-     "fn07_RUNNER.qmd"
     str_stone_gen_report_old_html_file <- "fn07_RUNNER.html"
