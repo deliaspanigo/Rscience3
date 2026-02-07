@@ -2,7 +2,7 @@
 title: "Rscience - Hidden Runner"
 format: 
   html: 
-    output-file: "fn07_gen_reveajs_STONE.html"
+    output-file: "fn07_STONE.html"
     embed-resources: true
     number-sections: true
     number-depth: 3
@@ -19,8 +19,8 @@ execute:
 ---
 
 Tool: Rs003_LM_QQ_FIX_BAL_ANOVA_1Way_s001  
-File name qmd: fn07_gen_reveajs_STONE.qmd
-File name html: fn07_gen_reveajs_STONE.html
+File name qmd: STONE.qmd
+File name html: STONE.html
 
 ```{r step00_time_start, eval=TRUE, echo=FALSE, results='asis'}
 # Captura del tiempo inicial
@@ -50,14 +50,14 @@ source(file = "../AAA_fn/fn_run.R")
 ```{r basics, eval=TRUE, echo=FALSE, results='asis'}
 # Files
     str_file_name_RData_internal_file <- "zzz_output_fn04_RData_Rscript_internal.RData"
-    str_file_hidden_runner_html_file <- "fn07_gen_reveajs_STONE.html"
-    str_stone_gen_report_qmd_file <-     "fn07_gen_reveajs_RUNNER.qmd"
-    str_stone_gen_report_old_html_file <- "fn07_gen_reveajs_RUNNER.html"
+    str_file_hidden_runner_html_file <- "fn07_STONE.html"
+    str_stone_gen_report_qmd_file <-     "fn07_RUNNER.qmd"
+    str_stone_gen_report_old_html_file <- "fn07_RUNNER.html"
     str_stone_gen_report_new_html_file <- paste0("zzz_output_", str_stone_gen_report_old_html_file)
 
 # Folders
     str_folder_output_local    <- "zzz_output_local"
-    str_folder_stone           <- "reporting_stone_files"
+    str_folder_stone           <- "files"
     str_folder_output_external <- "../zzz_zzz_output"
 
 # Paths

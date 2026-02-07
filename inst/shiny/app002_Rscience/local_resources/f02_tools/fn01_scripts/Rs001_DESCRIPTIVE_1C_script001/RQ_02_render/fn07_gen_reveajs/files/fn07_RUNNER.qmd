@@ -7,7 +7,7 @@ lang: en
 # Configuración de Formato RevealJS
 format:
   revealjs:
-    output-file: "fn07_gen_reveajs_RUNNER.html"
+    output-file: "fn07_RUNNER.html"
     self-contained: true
     transition: none
     theme: sky
