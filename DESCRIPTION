@@ -1,7 +1,7 @@
 Package: Rscience3
 Type: Package
 Title: Herramientas para Rscience
-Version: 0.6.14
+Version: 0.6.17
 Authors@R: c(
     person(
       "David", "Elias Panigo",
