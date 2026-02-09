@@ -53,7 +53,7 @@ source(file = "../AAA_fn/fn_run.R")
     str_file_hidden_runner_zip_file <- "STONE.html"
     str_stone_gen_report_qmd_file <-     "RUNNER.qmd"
     str_stone_gen_report_old_zip_file <- "RUNNER.zip"
-    str_stone_gen_report_new_zip_file <- paste0("zzz_output_", str_stone_gen_report_old_zip_file)
+    str_stone_gen_report_new_zip_file <- paste0("zzz_output_f09_", str_stone_gen_report_old_zip_file)
 
 # Folders
     str_folder_output_local    <- "zzz_output_local"

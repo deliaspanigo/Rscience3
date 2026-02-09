@@ -30,7 +30,7 @@ ui <- bslib::page_navbar(
       shinyWidgets::materialSwitch(
         inputId = "debug_mode",
         label = tags$b("Engineer View"),
-        value = TRUE,
+        value = FALSE, #TRUE,
         status = "danger"
       )
     ),
